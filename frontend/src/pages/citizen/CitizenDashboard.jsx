@@ -1,10 +1,41 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { AuthContext } from '../../context/AuthContext';
-import { User, Shield, FileText, Lock } from 'lucide-react';
+import { User, Shield, FileText, PlusCircle, BarChart3, HelpCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import api from '../../services/api';
 
 const CitizenDashboard = () => {
   const { user } = useContext(AuthContext);
+  const [stats, setStats] = useState({
+    total: 0,
+    pending: 0,
+    resolved: 0,
+    rejected: 0
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await api.get('/complaints/my');
+        if (response.data && response.data.success) {
+          const list = response.data.complaints;
+          setStats({
+            total: list.length,
+            pending: list.filter(item => item.status === 'Pending' || item.status === 'Under Investigation').length,
+            resolved: list.filter(item => item.status === 'Resolved').length,
+            rejected: list.filter(item => item.status === 'Rejected').length
+          });
+        }
+      } catch (err) {
+        console.error('Failed to load dashboard metrics:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
 
   if (!user) return null;
 
@@ -24,6 +55,34 @@ const CitizenDashboard = () => {
         </div>
       </div>
 
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-center">
+          <span className="block text-[9px] font-bold uppercase tracking-wider text-slate-400">Total Filed</span>
+          <span className="text-xl font-extrabold text-slate-800 mt-1 block">
+            {loading ? '...' : stats.total}
+          </span>
+        </div>
+        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-center">
+          <span className="block text-[9px] font-bold uppercase tracking-wider text-slate-400">In Progress</span>
+          <span className="text-xl font-extrabold text-amber-600 mt-1 block">
+            {loading ? '...' : stats.pending}
+          </span>
+        </div>
+        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-center">
+          <span className="block text-[9px] font-bold uppercase tracking-wider text-slate-400">Resolved</span>
+          <span className="text-xl font-extrabold text-emerald-600 mt-1 block">
+            {loading ? '...' : stats.resolved}
+          </span>
+        </div>
+        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-center">
+          <span className="block text-[9px] font-bold uppercase tracking-wider text-slate-400">Rejected</span>
+          <span className="text-xl font-extrabold text-rose-600 mt-1 block">
+            {loading ? '...' : stats.rejected}
+          </span>
+        </div>
+      </div>
+
       {/* Grid Content */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Profile Card */}
@@ -34,7 +93,7 @@ const CitizenDashboard = () => {
             </h3>
             <div className="space-y-3">
               <div className="flex items-center space-x-3 text-xs">
-                <User className="h-4 w-4 text-slate-400" />
+                <User className="h-4.5 w-4.5 text-slate-400" />
                 <div>
                   <p className="text-slate-400 font-semibold leading-none">Name</p>
                   <p className="text-slate-800 font-bold mt-1">{user.name}</p>
@@ -57,33 +116,33 @@ const CitizenDashboard = () => {
           </Link>
         </div>
 
-        {/* Complaint Console Placeholder */}
+        {/* Action Panel */}
         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm md:col-span-2 flex flex-col justify-between">
           <div>
             <h3 className="text-sm font-bold uppercase tracking-wider text-gov-navy border-b border-slate-100 pb-2">
-              Confidential Reporting
+              Confidential Drug Reporting Portal
             </h3>
             
             <div className="mt-4 p-4 bg-slate-50 border border-slate-150 rounded-lg flex items-start space-x-3">
-              <Lock className="h-5 w-5 text-gov-gold shrink-0 mt-0.5" />
+              <BarChart3 className="h-5 w-5 text-gov-gold shrink-0 mt-0.5" />
               <div>
-                <span className="font-bold text-xs uppercase tracking-wider text-gov-navy block">
-                  Reporting Module Locked
+                <span className="font-bold text-xs uppercase tracking-wide text-gov-navy block">
+                  Report Suspected Drug Operations
                 </span>
                 <p className="text-slate-500 text-xs mt-1 leading-relaxed">
-                  The complaint reporting form is currently locked. This module will be released in Phase 2 alongside peer-to-peer asymmetric encryption, enabling fully secure direct uploads to intelligence servers.
+                  Log specific activity details, locations, and media evidence. Submissions are encrypted. Optionally choose to mask your citizen profile identity from investigating officers.
                 </p>
               </div>
             </div>
           </div>
 
-          <button
-            disabled
-            className="mt-6 w-full bg-slate-200 text-slate-400 font-bold py-3 rounded-lg text-xs uppercase tracking-wider flex items-center justify-center space-x-2 border border-dashed border-slate-300"
+          <Link
+            to="/citizen/submit"
+            className="mt-6 w-full text-center bg-gov-navy hover:bg-gov-blue text-white font-bold py-3 rounded-lg text-xs uppercase tracking-wider flex items-center justify-center space-x-2 transition-smooth border border-gov-blue hover:border-gov-gold shadow-sm cursor-pointer"
           >
-            <FileText className="h-4 w-4" />
-            <span>Create Secure Report (Phase 2)</span>
-          </button>
+            <PlusCircle className="h-4.5 w-4.5 text-gov-gold" />
+            <span>File Secure Report</span>
+          </Link>
         </div>
       </div>
     </div>

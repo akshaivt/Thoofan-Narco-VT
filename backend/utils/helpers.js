@@ -20,5 +20,21 @@ const hashOTP = (otp) => {
 
 module.exports = {
   generateOTP,
-  hashOTP
+  hashOTP,
+  generateRandomComplaintId
 };
+
+/**
+ * Generates a secure random Complaint ID in the format OTF-YY-XXXXXX
+ * where YY is the last two digits of the year and XXXXXX is 6 random alphanumeric characters.
+ * @returns {string}
+ */
+function generateRandomComplaintId() {
+  const yearSuffix = new Date().getFullYear().toString().slice(-2);
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let randomStr = '';
+  for (let i = 0; i < 6; i++) {
+    randomStr += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return `OTF-${yearSuffix}-${randomStr}`;
+}

@@ -7,7 +7,10 @@ import {
   ShieldAlert, 
   Settings, 
   Lock,
-  Database
+  Database,
+  FileText,
+  PlusCircle,
+  Search
 } from 'lucide-react';
 
 const Sidebar = () => {
@@ -35,9 +38,48 @@ const Sidebar = () => {
               <span>Citizen Dashboard</span>
             </NavLink>
             <NavLink
+              to="/citizen/submit"
+              className={({ isActive }) =>
+                `flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-smooth mt-1 ${
+                  isActive
+                    ? 'bg-gov-blue text-white shadow-md'
+                    : 'text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+                }`
+              }
+            >
+              <PlusCircle className="h-5 w-5" />
+              <span>Submit Report</span>
+            </NavLink>
+            <NavLink
+              to="/citizen/reports"
+              className={({ isActive }) =>
+                `flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-smooth mt-1 ${
+                  isActive
+                    ? 'bg-gov-blue text-white shadow-md'
+                    : 'text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+                }`
+              }
+            >
+              <FileText className="h-5 w-5" />
+              <span>My Reports</span>
+            </NavLink>
+            <NavLink
+              to="/citizen/track"
+              className={({ isActive }) =>
+                `flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-smooth mt-1 ${
+                  isActive
+                    ? 'bg-gov-blue text-white shadow-md'
+                    : 'text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+                }`
+              }
+            >
+              <Search className="h-5 w-5" />
+              <span>Track Report</span>
+            </NavLink>
+            <NavLink
               to="/citizen/profile"
               className={({ isActive }) =>
-                `flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-smooth ${
+                `flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-smooth mt-1 ${
                   isActive
                     ? 'bg-gov-blue text-white shadow-md'
                     : 'text-slate-600 hover:bg-slate-200 hover:text-slate-900'
@@ -66,15 +108,19 @@ const Sidebar = () => {
               <LayoutDashboard className="h-5 w-5" />
               <span>Admin Dashboard</span>
             </NavLink>
-            <div className="pt-4 mt-4 border-t border-slate-200">
-              <span className="px-4 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                Operations Desk
-              </span>
-              <div className="mt-2 text-slate-400 text-xs px-4 flex items-center space-x-1.5 font-medium">
-                <ShieldAlert className="h-4 w-4 text-gov-gold" />
-                <span>Reports Access Restricted</span>
-              </div>
-            </div>
+            <NavLink
+              to="/admin/complaints"
+              className={({ isActive }) =>
+                `flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-smooth mt-1 ${
+                  isActive
+                    ? 'bg-gov-blue text-white shadow-md'
+                    : 'text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+                }`
+              }
+            >
+              <ShieldAlert className="h-5 w-5" />
+              <span>Manage Complaints</span>
+            </NavLink>
           </>
         );
 
@@ -95,11 +141,25 @@ const Sidebar = () => {
               <span>Super Admin Dashboard</span>
             </NavLink>
             
+            <NavLink
+              to="/admin/complaints"
+              className={({ isActive }) =>
+                `flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-smooth mt-1 ${
+                  isActive
+                    ? 'bg-gov-blue text-white shadow-md'
+                    : 'text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+                }`
+              }
+            >
+              <ShieldAlert className="h-5 w-5" />
+              <span>Manage Complaints</span>
+            </NavLink>
+
             {/* Super Admin can also view standard Admin content */}
             <NavLink
               to="/admin/dashboard"
               className={({ isActive }) =>
-                `flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-smooth mt-1.5 ${
+                `flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-smooth mt-1 ${
                   isActive
                     ? 'bg-gov-blue text-white shadow-md'
                     : 'text-slate-600 hover:bg-slate-200 hover:text-slate-900'

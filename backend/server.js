@@ -6,6 +6,7 @@ const compression = require('compression');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 
+const path = require('path');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const { errorHandler } = require('./middleware/errorMiddleware');
@@ -50,6 +51,8 @@ app.use('/api/auth', authLimiter);
 
 // 5. Mount API Routes
 app.use('/api/auth', authRoutes);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/api/complaints', require('./routes/complaintRoutes'));
 
 // Root Check Endpoint
 app.get('/', (req, res) => {

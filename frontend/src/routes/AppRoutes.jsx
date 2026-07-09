@@ -21,9 +21,14 @@ import ResetPassword from '../pages/ResetPassword';
 // Citizen Pages
 import CitizenDashboard from '../pages/citizen/CitizenDashboard';
 import Profile from '../pages/citizen/Profile';
+import SubmitReport from '../pages/citizen/SubmitReport';
+import MyReports from '../pages/citizen/MyReports';
+import TrackReport from '../pages/citizen/TrackReport';
 
 // Admin Pages
 import AdminDashboard from '../pages/admin/AdminDashboard';
+import AdminComplaints from '../pages/admin/AdminComplaints';
+import ComplaintDetails from '../pages/admin/ComplaintDetails';
 
 // Super Admin Pages
 import SuperAdminDashboard from '../pages/superadmin/SuperAdminDashboard';
@@ -56,6 +61,9 @@ const AppRoutes = () => {
       >
         <Route path="dashboard" element={<CitizenDashboard />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="submit" element={<SubmitReport />} />
+        <Route path="reports" element={<MyReports />} />
+        <Route path="track" element={<TrackReport />} />
       </Route>
 
       {/* 3. Admin Protected Pages (Dashboard Layout) */}
@@ -68,6 +76,8 @@ const AppRoutes = () => {
         }
       >
         <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="complaints" element={<AdminComplaints />} />
+        <Route path="complaints/:id" element={<ComplaintDetails />} />
       </Route>
 
       {/* 4. Super Admin Protected Pages (Dashboard Layout) */}

@@ -128,6 +128,14 @@ const complaintSchema = new mongoose.Schema(
       type: String,
       default: null
     },
+    riskLevel: {
+      type: String,
+      default: null
+    },
+    aiSuggestions: {
+      type: String,
+      default: null
+    },
     duplicateScore: {
       type: Number,
       default: null

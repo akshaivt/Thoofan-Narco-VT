@@ -32,7 +32,10 @@ const createComplaintSchema = z.object({
 const updateStatusSchema = z.object({
   status: z.enum(['Pending', 'Under Investigation', 'Resolved', 'Rejected'], {
     errorMap: () => ({ message: 'Invalid complaint status' })
-  })
+  }).optional(),
+  priority: z.enum(['Low', 'Medium', 'High'], {
+    errorMap: () => ({ message: 'Invalid complaint priority' })
+  }).optional()
 });
 
 const updateNotesSchema = z.object({

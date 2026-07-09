@@ -1,7 +1,9 @@
+const crypto = require('crypto');
 const User = require('../models/User');
 const authService = require('../services/authService');
 const mailService = require('../services/mailService');
 const { generateOTP, hashOTP } = require('../utils/helpers');
+const { decrypt } = require('../services/encryptionService');
 const {
   registerSchema,
   verifyOtpSchema,
@@ -9,6 +11,11 @@ const {
   forgotPasswordSchema,
   resetPasswordSchema
 } = require('../validators/authValidator');
+
+const hashEmail = (email) => {
+  if (!email) return '';
+  return crypto.createHash('sha256').update(email.toLowerCase().trim()).digest('hex');
+};
 
 /**
  * Register a new Citizen user.
@@ -20,7 +27,8 @@ const registerCitizen = async (req, res, next) => {
     const { name, email, phone, password } = parsedData;
 
     // 2. Check if user already exists
-    const existingUser = await User.findOne({ email });
+    const emailLookup = hashEmail(email);
+    const existingUser = await User.findOne({ emailLookup });
     if (existingUser) {
       res.status(400);
       throw new Error('An account with this email already exists.');

@@ -83,8 +83,8 @@ const updateComplaintStatus = async (req, res, next) => {
   try {
     const { id } = req.params;
     
-    // Validate request
-    const { status } = updateStatusSchema.parse(req.body);
+    // Validate request parameters (status and priority are optional)
+    const { status, priority } = updateStatusSchema.parse(req.body);
 
     const complaint = await Complaint.findById(id);
     if (!complaint) {
@@ -92,25 +92,31 @@ const updateComplaintStatus = async (req, res, next) => {
       throw new Error('Complaint record not found.');
     }
 
-    complaint.status = status;
-    
-    // Automatically elevate priority if status changes from Pending to Under Investigation
-    if (status === 'Under Investigation' && complaint.priority === 'Waiting for AI') {
-      complaint.priority = 'Medium'; // Default starting priority
+    if (status && status !== complaint.status) {
+      complaint.status = status;
+      
+      // Push new status timeline entry
+      complaint.timeline.push({
+        status,
+        updatedBy: req.user.id,
+        updatedAt: new Date()
+      });
+
+      // Automatically elevate priority if status changes from Pending to Under Investigation
+      if (status === 'Under Investigation' && complaint.priority === 'Waiting for AI') {
+        complaint.priority = 'Medium';
+      }
     }
 
-    // Push new status timeline entry
-    complaint.timeline.push({
-      status,
-      updatedBy: req.user.id,
-      updatedAt: new Date()
-    });
+    if (priority) {
+      complaint.priority = priority;
+    }
 
     const updatedComplaint = await complaint.save();
 
     res.status(200).json({
       success: true,
-      message: 'Status updated successfully',
+      message: 'Complaint updated successfully',
       complaint: updatedComplaint
     });
   } catch (error) {

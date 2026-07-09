@@ -22,6 +22,10 @@ const auditLogSchema = new mongoose.Schema(
       required: [true, 'Reason for action is required'],
       trim: true
     },
+    ipAddress: {
+      type: String,
+      default: ''
+    },
     timestamp: {
       type: Date,
       default: Date.now

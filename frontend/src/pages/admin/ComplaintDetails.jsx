@@ -17,7 +17,8 @@ import {
   FileVideo,
   AlertTriangle,
   Lock,
-  Eye
+  Eye,
+  Brain
 } from 'lucide-react';
 
 const ComplaintDetails = () => {
@@ -95,6 +96,38 @@ const ComplaintDetails = () => {
     } finally {
       setUpdating(false);
     }
+  };
+
+  const handleAcceptAISuggestions = async () => {
+    setUpdateSuccess('');
+    setUpdateError('');
+    setUpdating(true);
+
+    try {
+      const suggestedPriority = ['Low', 'Medium', 'High'].includes(complaint.aiPriority) 
+        ? complaint.aiPriority 
+        : 'Medium';
+      
+      // Update priority
+      await api.put(`/complaints/admin/${complaint._id}/status`, { priority: suggestedPriority });
+
+      // Append note
+      if (complaint.aiSuggestions) {
+        await api.put(`/complaints/admin/${complaint._id}/notes`, { note: `[AI Suggestion Applied]: ${complaint.aiSuggestions}` });
+      }
+
+      setUpdateSuccess('AI recommendations applied successfully: Case priority set to ' + suggestedPriority + '.');
+      await fetchComplaintDetails();
+    } catch (err) {
+      console.error(err);
+      setUpdateError('Failed to apply AI recommendations.');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleDismissAISuggestions = () => {
+    setUpdateSuccess('AI suggestions dismissed.');
   };
 
   const getMediaUrl = (url) => {
@@ -238,6 +271,71 @@ const ComplaintDetails = () => {
                     </p>
                   </div>
                 )}
+            </div>
+
+            {/* AI Analysis Panel */}
+            <div className="p-5 bg-blue-50/20 border border-blue-100 rounded-xl space-y-4 pt-4">
+              <h3 className="text-xs font-bold uppercase tracking-widest text-gov-navy flex items-center space-x-1.5">
+                <Brain className="h-4.5 w-4.5 text-gov-gold" />
+                <span>AI Automated Insights</span>
+              </h3>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                <div>
+                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">AI Category</span>
+                  <span className="font-bold text-slate-800">{complaint.aiCategory || 'N/A'}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Threat Risk Level</span>
+                  <span className={`font-bold uppercase tracking-wide text-[10px] ${
+                    complaint.riskLevel === 'Critical' ? 'text-rose-600' :
+                    complaint.riskLevel === 'High' ? 'text-amber-600' : 'text-slate-700'
+                  }`}>{complaint.riskLevel || 'N/A'}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Suggested Priority</span>
+                  <span className="font-bold text-slate-800">{complaint.aiPriority || 'N/A'}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Duplicate Score</span>
+                  <span className={`font-bold ${
+                    complaint.duplicateScore > 80 ? 'text-rose-600' : 'text-slate-800'
+                  }`}>
+                    {complaint.duplicateScore !== null ? `${complaint.duplicateScore}%` : '0%'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="space-y-2 border-t border-slate-100 pt-3">
+                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">AI Summary Analysis</span>
+                <p className="text-xs text-slate-600 leading-relaxed bg-white border border-slate-200 p-3 rounded-lg font-medium">
+                  {complaint.aiSummary || 'No AI summary generated.'}
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Suggested Actions</span>
+                <p className="text-xs text-slate-600 italic bg-white border border-slate-200 p-3 rounded-lg">
+                  "{complaint.aiSuggestions || 'No recommendations generated.'}"
+                </p>
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex space-x-3 pt-2">
+                <button
+                  onClick={handleAcceptAISuggestions}
+                  disabled={updating}
+                  className="flex-1 bg-gov-navy hover:bg-gov-blue text-white font-bold py-2 rounded-lg text-[10px] uppercase tracking-wider transition-smooth cursor-pointer shadow-sm text-center border border-gov-navy hover:border-gov-gold"
+                >
+                  Apply AI Priority & Notes
+                </button>
+                <button
+                  onClick={handleDismissAISuggestions}
+                  disabled={updating}
+                  className="px-4 border border-slate-200 hover:bg-slate-50 text-slate-500 hover:text-slate-700 font-bold py-2 rounded-lg text-[10px] uppercase tracking-wider transition-smooth cursor-pointer"
+                >
+                  Ignore
+                </button>
               </div>
             </div>
 

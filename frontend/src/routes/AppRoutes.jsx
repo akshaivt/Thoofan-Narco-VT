@@ -29,6 +29,10 @@ import TrackReport from '../pages/citizen/TrackReport';
 import AdminDashboard from '../pages/admin/AdminDashboard';
 import AdminComplaints from '../pages/admin/AdminComplaints';
 import ComplaintDetails from '../pages/admin/ComplaintDetails';
+import Analytics from '../pages/admin/Analytics';
+import MapView from '../pages/admin/MapView';
+import HeatMap from '../pages/admin/HeatMap';
+import AIInsights from '../pages/admin/AIInsights';
 
 // Super Admin Pages
 import SuperAdminDashboard from '../pages/superadmin/SuperAdminDashboard';
@@ -70,7 +74,7 @@ const AppRoutes = () => {
       <Route
         path="/admin"
         element={
-          <ProtectedRoute allowedRoles={['admin']}>
+          <ProtectedRoute allowedRoles={['admin', 'superadmin']}>
             <DashboardLayout />
           </ProtectedRoute>
         }
@@ -78,6 +82,10 @@ const AppRoutes = () => {
         <Route path="dashboard" element={<AdminDashboard />} />
         <Route path="complaints" element={<AdminComplaints />} />
         <Route path="complaints/:id" element={<ComplaintDetails />} />
+        <Route path="analytics" element={<Analytics />} />
+        <Route path="maps" element={<MapView />} />
+        <Route path="heatmap" element={<HeatMap />} />
+        <Route path="insights" element={<AIInsights />} />
       </Route>
 
       {/* 4. Super Admin Protected Pages (Dashboard Layout) */}

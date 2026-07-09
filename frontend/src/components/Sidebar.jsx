@@ -10,7 +10,11 @@ import {
   Database,
   FileText,
   PlusCircle,
-  Search
+  Search,
+  BarChart3,
+  MapPin,
+  Flame,
+  Brain
 } from 'lucide-react';
 
 const Sidebar = () => {
@@ -121,6 +125,58 @@ const Sidebar = () => {
               <ShieldAlert className="h-5 w-5" />
               <span>Manage Complaints</span>
             </NavLink>
+            <NavLink
+              to="/admin/analytics"
+              className={({ isActive }) =>
+                `flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-smooth mt-1 ${
+                  isActive
+                    ? 'bg-gov-blue text-white shadow-md'
+                    : 'text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+                }`
+              }
+            >
+              <BarChart3 className="h-5 w-5" />
+              <span>Intelligence Analytics</span>
+            </NavLink>
+            <NavLink
+              to="/admin/maps"
+              className={({ isActive }) =>
+                `flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-smooth mt-1 ${
+                  isActive
+                    ? 'bg-gov-blue text-white shadow-md'
+                    : 'text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+                }`
+              }
+            >
+              <MapPin className="h-5 w-5" />
+              <span>Caseload Map</span>
+            </NavLink>
+            <NavLink
+              to="/admin/heatmap"
+              className={({ isActive }) =>
+                `flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-smooth mt-1 ${
+                  isActive
+                    ? 'bg-gov-blue text-white shadow-md'
+                    : 'text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+                }`
+              }
+            >
+              <Flame className="h-5 w-5" />
+              <span>Caseload Heatmap</span>
+            </NavLink>
+            <NavLink
+              to="/admin/insights"
+              className={({ isActive }) =>
+                `flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-smooth mt-1 ${
+                  isActive
+                    ? 'bg-gov-blue text-white shadow-md'
+                    : 'text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+                }`
+              }
+            >
+              <Brain className="h-5 w-5" />
+              <span>AI Insights</span>
+            </NavLink>
           </>
         );
 
@@ -153,6 +209,59 @@ const Sidebar = () => {
             >
               <ShieldAlert className="h-5 w-5" />
               <span>Manage Complaints</span>
+            </NavLink>
+
+            <NavLink
+              to="/admin/analytics"
+              className={({ isActive }) =>
+                `flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-smooth mt-1 ${
+                  isActive
+                    ? 'bg-gov-blue text-white shadow-md'
+                    : 'text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+                }`
+              }
+            >
+              <BarChart3 className="h-5 w-5" />
+              <span>Intelligence Analytics</span>
+            </NavLink>
+            <NavLink
+              to="/admin/maps"
+              className={({ isActive }) =>
+                `flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-smooth mt-1 ${
+                  isActive
+                    ? 'bg-gov-blue text-white shadow-md'
+                    : 'text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+                }`
+              }
+            >
+              <MapPin className="h-5 w-5" />
+              <span>Caseload Map</span>
+            </NavLink>
+            <NavLink
+              to="/admin/heatmap"
+              className={({ isActive }) =>
+                `flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-smooth mt-1 ${
+                  isActive
+                    ? 'bg-gov-blue text-white shadow-md'
+                    : 'text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+                }`
+              }
+            >
+              <Flame className="h-5 w-5" />
+              <span>Caseload Heatmap</span>
+            </NavLink>
+            <NavLink
+              to="/admin/insights"
+              className={({ isActive }) =>
+                `flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-smooth mt-1 ${
+                  isActive
+                    ? 'bg-gov-blue text-white shadow-md'
+                    : 'text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+                }`
+              }
+            >
+              <Brain className="h-5 w-5" />
+              <span>AI Insights</span>
             </NavLink>
 
             {/* Super Admin can also view standard Admin content */}

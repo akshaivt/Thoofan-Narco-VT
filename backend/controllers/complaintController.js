@@ -1,6 +1,8 @@
 const Complaint = require('../models/Complaint');
 const cloudinaryService = require('../services/cloudinaryService');
 const { createComplaintSchema } = require('../validators/complaintValidator');
+const { analyzeComplaintText } = require('../services/geminiService');
+const { checkDuplicateScore } = require('../utils/similarity');
 
 /**
  * File a new drug activity complaint.
@@ -33,7 +35,18 @@ const createComplaint = async (req, res, next) => {
       }
     }
 
-    // 3. Create database entry
+    // 3. Compute Duplicate Score
+    const duplicateScore = await checkDuplicateScore({
+      district: parsedData.district,
+      place: parsedData.place,
+      incidentDate: parsedData.incidentDate,
+      description: parsedData.description
+    });
+
+    // 4. Run Gemini AI Intelligence Analysis
+    const aiResult = await analyzeComplaintText(parsedData.description, parsedData.activityType);
+
+    // 5. Create database entry
     const newComplaint = await Complaint.create({
       ...parsedData,
       citizenId: req.user.id,
@@ -48,7 +61,13 @@ const createComplaint = async (req, res, next) => {
           updatedBy: req.user.id,
           updatedAt: new Date()
         }
-      ]
+      ],
+      aiSummary: aiResult.aiSummary,
+      aiCategory: aiResult.aiCategory,
+      aiPriority: aiResult.aiPriority,
+      riskLevel: aiResult.riskLevel,
+      aiSuggestions: aiResult.aiSuggestions,
+      duplicateScore
     });
 
     res.status(201).json({

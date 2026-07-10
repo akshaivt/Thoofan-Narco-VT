@@ -16,15 +16,17 @@ router.post('/login', login);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
 
+const { decrypt } = require('../services/encryptionService');
+
 // Protected Auth Profile Verification (Helper for React AuthState Refresh)
 router.get('/me', protect, (req, res) => {
   res.status(200).json({
     success: true,
     user: {
       id: req.user._id,
-      name: req.user.name,
-      email: req.user.email,
-      phone: req.user.phone,
+      name: decrypt(req.user.name),
+      email: decrypt(req.user.email),
+      phone: decrypt(req.user.phone),
       role: req.user.role
     }
   });

@@ -1,4 +1,10 @@
 const Complaint = require('../models/Complaint');
+const AuditLog = require('../models/AuditLog');
+const User = require('../models/User');
+const Notification = require('../models/Notification');
+const mailService = require('../services/mailService');
+const pdfService = require('../services/pdfService');
+const { decrypt } = require('../services/encryptionService');
 const { updateStatusSchema, updateNotesSchema } = require('../validators/complaintValidator');
 
 /**
@@ -106,6 +112,23 @@ const updateComplaintStatus = async (req, res, next) => {
       if (status === 'Under Investigation' && complaint.priority === 'Waiting for AI') {
         complaint.priority = 'Medium';
       }
+
+      // Fetch citizen to dispatch alerts
+      const citizen = await User.findById(complaint.citizenId);
+      if (citizen) {
+        // Create Dashboard Notification record
+        await Notification.create({
+          userId: citizen._id,
+          complaintId: complaint._id,
+          message: `Your complaint ID ${complaint.complaintId} has been updated to: ${status}.`,
+          type: 'STATUS_CHANGE'
+        });
+
+        // Dispatch Nodemailer Email
+        const citizenEmail = decrypt(citizen.email);
+        const citizenName = decrypt(citizen.name);
+        await mailService.sendStatusAlert(citizenEmail, citizenName, complaint.complaintId, status);
+      }
     }
 
     if (priority) {
@@ -160,8 +183,103 @@ const updateComplaintNotes = async (req, res, next) => {
   }
 };
 
+/**
+ * Reveal confidential reporter details.
+ * Protected: Super Admin only.
+ */
+const revealIdentity = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { reason } = req.body;
+
+    if (!reason || reason.trim() === '') {
+      res.status(400);
+      throw new Error('Mandatory disclosure reason is required to reveal identity.');
+    }
+
+    const complaint = await Complaint.findById(id).populate('citizenId');
+    if (!complaint) {
+      res.status(404);
+      throw new Error('Complaint record not found.');
+    }
+
+    // Security check: Only superadmin role
+    if (req.user.role !== 'superadmin') {
+      res.status(403);
+      throw new Error('Access Denied: Only Super Administrator can reveal reporter identities.');
+    }
+
+    // Write to AuditLog
+    const ipAddress = req.ip || req.connection?.remoteAddress || '127.0.0.1';
+    await AuditLog.create({
+      userId: req.user.id,
+      complaintId: complaint._id,
+      action: 'REVEAL_IDENTITY',
+      reason: reason.trim(),
+      ipAddress
+    });
+
+    // Decrypt details
+    const reporter = {
+      name: decrypt(complaint.citizenId.name),
+      email: decrypt(complaint.citizenId.email),
+      phone: decrypt(complaint.citizenId.phone)
+    };
+
+    res.status(200).json({
+      success: true,
+      message: 'Identity revealed successfully. Audit log recorded.',
+      reporter
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Generate and download PDF case ledger.
+ * Protected: Admin & Super Admin only.
+ */
+const downloadPDF = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const complaint = await Complaint.findById(id).populate('citizenId');
+    
+    if (!complaint) {
+      res.status(404);
+      throw new Error('Complaint record not found.');
+    }
+
+    // Create a copy and decrypt citizen if NOT confidential
+    const printableComplaint = complaint.toObject();
+    if (printableComplaint.isConfidential) {
+      printableComplaint.citizenDetails = { name: 'Confidential' };
+    } else {
+      printableComplaint.citizenDetails = {
+        name: decrypt(complaint.citizenId?.name || ''),
+        email: decrypt(complaint.citizenId?.email || ''),
+        phone: decrypt(complaint.citizenId?.phone || '')
+      };
+    }
+
+    // Set response headers
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename=Operation_Toofan_Report_${complaint.complaintId}.pdf`
+    );
+
+    // Call PDF generator service
+    pdfService.buildComplaintPDF(printableComplaint, res);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getAllComplaints,
   updateComplaintStatus,
-  updateComplaintNotes
+  updateComplaintNotes,
+  revealIdentity,
+  downloadPDF
 };

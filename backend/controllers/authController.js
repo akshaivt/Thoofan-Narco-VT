@@ -77,8 +77,9 @@ const verifyOTP = async (req, res, next) => {
     const { email, otp, purpose } = parsedData;
 
     // 2. Find user matching email, purpose, and check if OTP has expired
+    const emailLookup = hashEmail(email);
     const user = await User.findOne({
-      email,
+      emailLookup,
       otpPurpose: purpose,
       otpExpires: { $gt: new Date() }
     });
@@ -131,7 +132,8 @@ const login = async (req, res, next) => {
     const { email, password } = parsedData;
 
     // 2. Find user
-    const user = await User.findOne({ email });
+    const emailLookup = hashEmail(email);
+    const user = await User.findOne({ emailLookup });
     if (!user) {
       res.status(401);
       throw new Error('Invalid email or password.');
@@ -159,9 +161,9 @@ const login = async (req, res, next) => {
       token,
       user: {
         id: user._id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
+        name: decrypt(user.name),
+        email: decrypt(user.email),
+        phone: decrypt(user.phone),
         role: user.role
       }
     });
@@ -180,7 +182,8 @@ const forgotPassword = async (req, res, next) => {
     const { email } = parsedData;
 
     // 2. Find user
-    const user = await User.findOne({ email });
+    const emailLookup = hashEmail(email);
+    const user = await User.findOne({ emailLookup });
 
     // For safety against email scanning, we reply with a successful response
     // even if email doesn't exist, but only send mail if user is a citizen.
@@ -220,8 +223,9 @@ const resetPassword = async (req, res, next) => {
     const { email, otp, newPassword } = parsedData;
 
     // 2. Find user matching email, purpose, and check if OTP has expired
+    const emailLookup = hashEmail(email);
     const user = await User.findOne({
-      email,
+      emailLookup,
       otpPurpose: 'reset',
       otpExpires: { $gt: new Date() }
     });

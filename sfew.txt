@@ -1,0 +1,177 @@
+I went through the main frontend, backend, routing, auth, database, and feature files. Here is the feature/button/auth placement map.
+
+**App Entry**
+- Electron desktop app starts in [main.js](C:/Users/User/Documents/pos-billing-software/main.js:1)
+  - Creates Electron window: [main.js](C:/Users/User/Documents/pos-billing-software/main.js:60)
+  - Starts backend Express server inside Electron: [main.js](C:/Users/User/Documents/pos-billing-software/main.js:26)
+  - Loads frontend from local server: [main.js](C:/Users/User/Documents/pos-billing-software/main.js:76)
+- Electron-safe PDF opening bridge is in [preload.js](C:/Users/User/Documents/pos-billing-software/preload.js:9)
+- React app starts in [frontend/src/main.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/main.jsx:1)
+- Main React routes are in [frontend/src/App.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/App.jsx:100)
+
+**Authentication**
+- Login screen UI is in [frontend/src/pages/login.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/login.jsx:4)
+  - Username/email input: [login.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/login.jsx:122)
+  - Password input: [login.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/login.jsx:134)
+  - Show/hide password eye button: [login.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/login.jsx:141)
+  - Sign In button: [login.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/login.jsx:162)
+  - Staff/admin role tabs exist but are commented out: [login.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/login.jsx:78)
+- Frontend login API call is in [frontend/src/api/client.js](C:/Users/User/Documents/pos-billing-software/frontend/src/api/client.js:31)
+- Session storage/localStorage save and clear logic is in [client.js](C:/Users/User/Documents/pos-billing-software/frontend/src/api/client.js:4)
+- App-level login handler is in [App.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/App.jsx:86)
+- Protected route guard is in [App.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/App.jsx:13)
+- Unauthorized page and Go Back button are in [App.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/App.jsx:22)
+- Backend auth routes are in [backend/routes/authRoutes.js](C:/Users/User/Documents/pos-billing-software/backend/routes/authRoutes.js:1)
+  - `POST /api/auth/login`: [authRoutes.js](C:/Users/User/Documents/pos-billing-software/backend/routes/authRoutes.js:5)
+  - Register exists but is disabled: [backend/controllers/authController.js](C:/Users/User/Documents/pos-billing-software/backend/controllers/authController.js:4)
+- Backend login verification is in [authController.js](C:/Users/User/Documents/pos-billing-software/backend/controllers/authController.js:10)
+- Token/password helpers are in [backend/utils/auth.js](C:/Users/User/Documents/pos-billing-software/backend/utils/auth.js:1)
+- Auth middleware and role checking are in [backend/middleware/authMiddleware.js](C:/Users/User/Documents/pos-billing-software/backend/middleware/authMiddleware.js:3)
+
+**Routes / Pages**
+- `/` login or redirect: [App.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/App.jsx:104)
+- `/dashboard`: [App.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/App.jsx:116)
+- `/products`: [App.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/App.jsx:124)
+- `/daily-report`: [App.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/App.jsx:132)
+- `/monthly-report`: [App.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/App.jsx:142)
+- `/invoice`: [App.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/App.jsx:150)
+- `/invoices`: [App.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/App.jsx:160)
+
+Active frontend routes are currently admin-only. Staff code exists in comments, but the app now sends logged-in users to `/dashboard` and protects every main page with `allowedRoles={["admin"]}`.
+
+**Sidebar / Navigation**
+- Sidebar component is in [frontend/src/components/sidebar.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/components/sidebar.jsx:6)
+- Mobile hamburger button: [sidebar.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/components/sidebar.jsx:62)
+- Mobile close button: [sidebar.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/components/sidebar.jsx:74)
+- Sidebar buttons list:
+  - Dashboard, Products, Invoice Entry, Invoice History, Daily Report, Monthly Report: [sidebar.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/components/sidebar.jsx:27)
+  - Rendered as buttons: [sidebar.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/components/sidebar.jsx:91)
+- Logout button: [sidebar.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/components/sidebar.jsx:103)
+- Logout clears session/localStorage and redirects to `/`: [sidebar.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/components/sidebar.jsx:14)
+
+**Dashboard**
+- Dashboard page is in [frontend/src/pages/dashboard.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/dashboard.jsx:259)
+- Revenue/products/VAT/monthly stat cards: [dashboard.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/dashboard.jsx:313)
+- Daily payment split chart: [dashboard.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/dashboard.jsx:344)
+- Monthly week breakdown chart: [dashboard.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/dashboard.jsx:390)
+- Monthly revenue bar chart: [dashboard.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/dashboard.jsx:426)
+- Today’s invoices table: [dashboard.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/dashboard.jsx:445)
+- OneDrive backup status widget: [dashboard.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/dashboard.jsx:81)
+  - Configure gear button: [dashboard.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/dashboard.jsx:158)
+  - OneDrive path input: [dashboard.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/dashboard.jsx:181)
+  - Cancel/Save buttons: [dashboard.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/dashboard.jsx:189)
+- Internet status widget: [dashboard.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/dashboard.jsx:198)
+
+**Product Management**
+- Product page is in [frontend/src/pages/productManagement.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/productManagement.jsx:7)
+- Add Product button: [productManagement.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/productManagement.jsx:144)
+- Product table: [productManagement.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/productManagement.jsx:158)
+- Edit button per product: [productManagement.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/productManagement.jsx:192)
+- Delete button per product: [productManagement.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/productManagement.jsx:198)
+- Add/Edit modal: [productManagement.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/productManagement.jsx:215)
+- Product form fields name/SKU/category/price/stock/VAT: [productManagement.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/productManagement.jsx:226)
+- Modal Cancel and Add/Update Product buttons: [productManagement.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/productManagement.jsx:314)
+- Delete confirmation modal: [productManagement.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/productManagement.jsx:334)
+
+**Invoice Entry**
+- Invoice creation page is in [frontend/src/pages/staffdashboard.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/staffdashboard.jsx:8)
+- Reset Form button: [staffdashboard.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/staffdashboard.jsx:360)
+- Print Invoice button: [staffdashboard.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/staffdashboard.jsx:363)
+- Customer fields: invoice no, date, TRN, name, location, contact, brand, model, counter, contract: [staffdashboard.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/staffdashboard.jsx:369)
+- Customer autocomplete logic: [staffdashboard.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/staffdashboard.jsx:27)
+- Reference fields D.N/S.R/L.P.O: [staffdashboard.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/staffdashboard.jsx:449)
+- Product item table: [staffdashboard.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/staffdashboard.jsx:459)
+- Product autocomplete logic: [staffdashboard.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/staffdashboard.jsx:78)
+- Remove row button: [staffdashboard.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/staffdashboard.jsx:510)
+- Add Item button: [staffdashboard.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/staffdashboard.jsx:518)
+- Note, totals, discount type and discount input: [staffdashboard.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/staffdashboard.jsx:523)
+- Payment checkboxes Cash/Cheque/Card/Bank Transfer: [staffdashboard.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/staffdashboard.jsx:551)
+- Save Record button: [staffdashboard.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/staffdashboard.jsx:561)
+- Print A4 button: [staffdashboard.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/staffdashboard.jsx:564)
+- Printable invoice layout is in the same file: [staffdashboard.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/staffdashboard.jsx:574)
+- Saved invoice success modal: [staffdashboard.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/staffdashboard.jsx:710)
+- Modal Dismiss and Print Invoice buttons: [staffdashboard.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/staffdashboard.jsx:737)
+
+**Invoice History**
+- Invoice history page is in [frontend/src/pages/invoicesHistory.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/invoicesHistory.jsx:9)
+- Search input: [invoicesHistory.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/invoicesHistory.jsx:118)
+- Status filter: [invoicesHistory.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/invoicesHistory.jsx:129)
+- From/To date filters: [invoicesHistory.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/invoicesHistory.jsx:142)
+- Invoice table: [invoicesHistory.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/invoicesHistory.jsx:163)
+- View / Print button: [invoicesHistory.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/invoicesHistory.jsx:212)
+- Void button logic exists, but only shows for `isOwner`: [invoicesHistory.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/invoicesHistory.jsx:219)
+  - Note: `isOwner` checks `userRole === "owner"` at [invoicesHistory.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/invoicesHistory.jsx:10), while current app uses `admin`, so this button likely will not appear.
+- Invoice details/print modal: [invoicesHistory.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/invoicesHistory.jsx:245)
+- Modal close button: [invoicesHistory.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/invoicesHistory.jsx:251)
+- Modal Close and Print Invoice buttons: [invoicesHistory.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/invoicesHistory.jsx:445)
+
+**Reports**
+- Daily Report page is in [frontend/src/pages/dailyReport.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/dailyReport.jsx:6)
+  - Date picker: [dailyReport.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/dailyReport.jsx:25)
+  - Daily stats: [dailyReport.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/dailyReport.jsx:32)
+  - Daily invoice table: [dailyReport.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/dailyReport.jsx:47)
+- Monthly Report page is in [frontend/src/pages/monthlyReport.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/monthlyReport.jsx:8)
+  - Month/year dropdowns: [monthlyReport.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/monthlyReport.jsx:47)
+  - Monthly stats: [monthlyReport.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/monthlyReport.jsx:61)
+  - Weekly breakdown table: [monthlyReport.jsx](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/monthlyReport.jsx:83)
+- Shared report calculations are in [frontend/src/utils/reports.js](C:/Users/User/Documents/pos-billing-software/frontend/src/utils/reports.js:1)
+
+**Frontend API Client**
+- API base URL and session key: [frontend/src/api/client.js](C:/Users/User/Documents/pos-billing-software/frontend/src/api/client.js:1)
+- Auth header attachment: [client.js](C:/Users/User/Documents/pos-billing-software/frontend/src/api/client.js:47)
+- Product API methods: [client.js](C:/Users/User/Documents/pos-billing-software/frontend/src/api/client.js:67)
+- Invoice API methods: [client.js](C:/Users/User/Documents/pos-billing-software/frontend/src/api/client.js:71)
+- Backup/settings/internet methods: [client.js](C:/Users/User/Documents/pos-billing-software/frontend/src/api/client.js:76)
+
+**Backend API**
+- Express server is in [backend/server.js](C:/Users/User/Documents/pos-billing-software/backend/server.js:1)
+- Health endpoints: [server.js](C:/Users/User/Documents/pos-billing-software/backend/server.js:18)
+- Route mounting:
+  - `/api/auth`: [server.js](C:/Users/User/Documents/pos-billing-software/backend/server.js:50)
+  - `/api/products`: [server.js](C:/Users/User/Documents/pos-billing-software/backend/server.js:51)
+  - `/api/invoices`: [server.js](C:/Users/User/Documents/pos-billing-software/backend/server.js:52)
+  - `/api/backup`: [server.js](C:/Users/User/Documents/pos-billing-software/backend/server.js:53)
+- Product backend:
+  - Routes: [backend/routes/productRoutes.js](C:/Users/User/Documents/pos-billing-software/backend/routes/productRoutes.js:1)
+  - Controller: [backend/controllers/productController.js](C:/Users/User/Documents/pos-billing-software/backend/controllers/productController.js:1)
+- Invoice backend:
+  - Routes: [backend/routes/invoiceRoutes.js](C:/Users/User/Documents/pos-billing-software/backend/routes/invoiceRoutes.js:1)
+  - Create invoice: [backend/controllers/invoiceController.js](C:/Users/User/Documents/pos-billing-software/backend/controllers/invoiceController.js:63)
+  - Get invoices: [invoiceController.js](C:/Users/User/Documents/pos-billing-software/backend/controllers/invoiceController.js:219)
+  - Void invoice: [invoiceController.js](C:/Users/User/Documents/pos-billing-software/backend/controllers/invoiceController.js:232)
+  - PDF history/path: [invoiceController.js](C:/Users/User/Documents/pos-billing-software/backend/controllers/invoiceController.js:270)
+- Backup backend:
+  - Routes: [backend/routes/backupRoutes.js](C:/Users/User/Documents/pos-billing-software/backend/routes/backupRoutes.js:1)
+  - Controller: [backend/controllers/backupController.js](C:/Users/User/Documents/pos-billing-software/backend/controllers/backupController.js:1)
+  - OneDrive Excel backup status: [backupController.js](C:/Users/User/Documents/pos-billing-software/backend/controllers/backupController.js:353)
+  - Excel backup writing service: [backend/services/excelBackup.js](C:/Users/User/Documents/pos-billing-software/backend/services/excelBackup.js:1)
+  - Google Drive auto-backup scheduler: [backend/utils/scheduler.js](C:/Users/User/Documents/pos-billing-software/backend/utils/scheduler.js:1)
+
+**Database / Data**
+- SQLite database setup is in [backend/config/db.js](C:/Users/User/Documents/pos-billing-software/backend/config/db.js:1)
+- Tables created there:
+  - `users`: [db.js](C:/Users/User/Documents/pos-billing-software/backend/config/db.js:71)
+  - `products`: [db.js](C:/Users/User/Documents/pos-billing-software/backend/config/db.js:84)
+  - `customers`: [db.js](C:/Users/User/Documents/pos-billing-software/backend/config/db.js:102)
+  - `invoices`: [db.js](C:/Users/User/Documents/pos-billing-software/backend/config/db.js:114)
+  - `invoice_items`: [db.js](C:/Users/User/Documents/pos-billing-software/backend/config/db.js:147)
+  - `settings`: [db.js](C:/Users/User/Documents/pos-billing-software/backend/config/db.js:165)
+- Default users are seeded in [db.js](C:/Users/User/Documents/pos-billing-software/backend/config/db.js:206)
+  - Admin: `admin@pos.com`, password `admin123`
+  - Staff: `staff@pos.com`, password `staff123`
+- Invoice calculation logic is in [backend/utils/calc.js](C:/Users/User/Documents/pos-billing-software/backend/utils/calc.js:1)
+- Old Mongoose model files exist but are not used by the active SQLite controllers:
+  - [backend/models/User.js](C:/Users/User/Documents/pos-billing-software/backend/models/User.js:1)
+  - [backend/models/Product.js](C:/Users/User/Documents/pos-billing-software/backend/models/Product.js:1)
+  - [backend/models/Invoice.js](C:/Users/User/Documents/pos-billing-software/backend/models/Invoice.js:1)
+
+**Styling / Assets**
+- Global app styles: [frontend/src/App.css](C:/Users/User/Documents/pos-billing-software/frontend/src/App.css)
+- Global index styles: [frontend/src/index.css](C:/Users/User/Documents/pos-billing-software/frontend/src/index.css)
+- Login styles: [frontend/src/pages/login.css](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/login.css)
+- Dashboard/invoice shared styles: [frontend/src/pages/dashboard.css](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/dashboard.css)
+- Dashboard analytics styles: [frontend/src/pages/dashboard-analytics.css](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/dashboard-analytics.css)
+- Product page styles: [frontend/src/pages/productManagement.css](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/productManagement.css)
+- Invoice history styles: [frontend/src/pages/invoicesHistory.css](C:/Users/User/Documents/pos-billing-software/frontend/src/pages/invoicesHistory.css)
+- Sidebar styles: [frontend/src/components/sidebar.css](C:/Users/User/Documents/pos-billing-software/frontend/src/components/sidebar.css)
+- Logos/brand images are in [frontend/public](C:/Users/User/Documents/pos-billing-software/frontend/public).

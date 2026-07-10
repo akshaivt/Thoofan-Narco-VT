@@ -1,4 +1,5 @@
 const Complaint = require('../models/Complaint');
+const Notification = require('../models/Notification');
 const cloudinaryService = require('../services/cloudinaryService');
 const { createComplaintSchema } = require('../validators/complaintValidator');
 const { analyzeComplaintText } = require('../services/geminiService');
@@ -159,8 +160,64 @@ const getComplaintByCode = async (req, res, next) => {
   }
 };
 
+/**
+ * Retrieve current Citizen's notification history.
+ * Protected: Citizen role only.
+ */
+const getMyNotifications = async (req, res, next) => {
+  try {
+    const list = await Notification.find({ userId: req.user.id })
+      .sort({ createdAt: -1 });
+      
+    const unreadCount = await Notification.countDocuments({
+      userId: req.user.id,
+      isRead: false
+    });
+
+    res.status(200).json({
+      success: true,
+      unreadCount,
+      notifications: list
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Mark citizen notification as read.
+ * Protected: Citizen role only.
+ */
+const markNotificationRead = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const notification = await Notification.findOne({
+      _id: id,
+      userId: req.user.id
+    });
+
+    if (!notification) {
+      res.status(404);
+      throw new Error('Notification record not found.');
+    }
+
+    notification.isRead = true;
+    await notification.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Notification marked as read.'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createComplaint,
   getMyComplaints,
-  getComplaintByCode
+  getComplaintByCode,
+  getMyNotifications,
+  markNotificationRead
 };

@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { Shield, LogOut, LayoutDashboard, User as UserIcon } from 'lucide-react';
 
+import NotificationCenter from './NotificationCenter';
+
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -51,6 +53,7 @@ const Navbar = () => {
 
             {user ? (
               <div className="flex items-center space-x-4 border-l border-gov-blue pl-4">
+                {user.role === 'citizen' && <NotificationCenter />}
                 <Link
                   to={getDashboardPath()}
                   className="flex items-center space-x-1.5 bg-gov-blue/50 hover:bg-gov-blue px-3 py-1.5 rounded text-xs font-semibold tracking-wider uppercase border border-gov-blue hover:border-gov-gold transition-smooth"

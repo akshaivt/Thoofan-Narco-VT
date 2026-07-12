@@ -17,6 +17,8 @@ import {
   FileVideo,
   AlertTriangle,
   Lock,
+  Unlock,
+  Download,
   Eye,
   Brain
 } from 'lucide-react';
@@ -35,6 +37,53 @@ const ComplaintDetails = () => {
   const [updateSuccess, setUpdateSuccess] = useState('');
   const [updateError, setUpdateError] = useState('');
   const [updating, setUpdating] = useState(false);
+
+  // Phase 4 states
+  const [revealedProfile, setRevealedProfile] = useState(null);
+  const [showRevealModal, setShowRevealModal] = useState(false);
+  const [revealReason, setRevealReason] = useState('');
+  const [revealError, setRevealError] = useState('');
+  const [pdfGenerating, setPdfGenerating] = useState(false);
+
+  const handleRevealIdentity = async (e) => {
+    e.preventDefault();
+    if (!revealReason.trim()) {
+      setRevealError('Reason is mandatory.');
+      return;
+    }
+    setRevealError('');
+    try {
+      const response = await api.post(`/complaints/admin/${complaint._id}/reveal-identity`, {
+        reason: revealReason
+      });
+      if (response.data.success) {
+        setRevealedProfile(response.data.reporter);
+        setShowRevealModal(false);
+      }
+    } catch (err) {
+      setRevealError(err.response?.data?.message || 'Failed to reveal identity.');
+    }
+  };
+
+  const handleDownloadPDF = async () => {
+    if (!complaint) return;
+    setPdfGenerating(true);
+    try {
+      const response = await api.get(`/complaints/admin/${complaint._id}/pdf`, {
+        responseType: 'blob'
+      });
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = `Operational_Report_${complaint.complaintId}.pdf`;
+      link.click();
+    } catch (err) {
+      console.error('PDF generation error:', err);
+      alert('Failed to generate case PDF file.');
+    } finally {
+      setPdfGenerating(false);
+    }
+  };
 
   const fetchComplaintDetails = async () => {
     try {
@@ -173,6 +222,14 @@ const ComplaintDetails = () => {
         </Link>
         
         <div className="flex items-center space-x-3">
+          <button
+            onClick={handleDownloadPDF}
+            disabled={pdfGenerating}
+            className="inline-flex items-center space-x-1.5 bg-gov-blue/15 hover:bg-gov-blue/25 text-gov-blue px-3.5 py-2 rounded-lg text-[10px] font-extrabold uppercase tracking-wider transition-smooth cursor-pointer"
+          >
+            <Download className="h-3.5 w-3.5" />
+            <span>{pdfGenerating ? 'Generating...' : 'Export PDF'}</span>
+          </button>
           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Status</span>
           <ComplaintStatusBadge status={complaint.status} />
         </div>
@@ -271,6 +328,7 @@ const ComplaintDetails = () => {
                     </p>
                   </div>
                 )}
+              </div>
             </div>
 
             {/* AI Analysis Panel */}
@@ -419,19 +477,56 @@ const ComplaintDetails = () => {
             </h3>
 
             {complaint.isConfidential ? (
-              /* Confidential Report - Hides for both standard Admin and Super Admin roles */
-              <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg text-center space-y-3">
-                <Lock className="h-6 w-6 text-gov-gold mx-auto" />
-                <span className="inline-block px-2.5 py-0.5 text-[9px] font-extrabold tracking-wider uppercase bg-gov-light text-gov-blue rounded border border-slate-200">
-                  Confidential Report
-                </span>
-                <p className="text-[10px] text-slate-500 leading-normal">
-                  This citizen has requested confidentiality. Profile details are hidden from your desk.
-                </p>
-                <div className="text-[9px] bg-slate-100 border border-slate-200 p-2 rounded text-slate-400 mt-2 font-semibold">
-                  Identity Reveal restricted. Slated for Phase 4 with audit logging controls.
+              revealedProfile ? (
+                /* Decrypted Profile (Super Admin Reveal) */
+                <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-lg space-y-3 text-xs">
+                  <div className="flex items-center space-x-1.5 text-emerald-800 font-bold">
+                    <Unlock className="h-4.5 w-4.5 text-emerald-600" />
+                    <span className="uppercase tracking-wider text-[9px] bg-emerald-100 px-2 py-0.5 rounded">Decrypted Identity</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Reporter Name</span>
+                    <span className="block text-slate-800 font-bold mt-0.5">{revealedProfile.name}</span>
+                  </div>
+                  <div className="border-t border-emerald-100 pt-2">
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Reporter Email</span>
+                    <span className="block text-slate-850 font-medium mt-0.5 font-mono">{revealedProfile.email}</span>
+                  </div>
+                  <div className="border-t border-emerald-100 pt-2">
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Reporter Phone</span>
+                    <span className="block text-slate-800 font-bold mt-0.5">{revealedProfile.phone}</span>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                /* Confidential Locked Display */
+                <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg text-center space-y-3">
+                  <Lock className="h-6 w-6 text-gov-gold mx-auto" />
+                  <span className="inline-block px-2.5 py-0.5 text-[9px] font-extrabold tracking-wider uppercase bg-gov-light text-gov-blue rounded border border-slate-200">
+                    Confidential Report
+                  </span>
+                  <p className="text-[10px] text-slate-500 leading-normal">
+                    This citizen has requested confidentiality. Profile details are restricted.
+                  </p>
+                  
+                  {role === 'superadmin' ? (
+                    <button
+                      onClick={() => {
+                        setRevealReason('');
+                        setRevealError('');
+                        setShowRevealModal(true);
+                      }}
+                      className="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2 rounded-lg text-[10px] uppercase tracking-wider flex items-center justify-center space-x-1.5 transition-smooth cursor-pointer shadow-sm"
+                    >
+                      <Unlock className="h-3.5 w-3.5" />
+                      <span>Reveal Identity</span>
+                    </button>
+                  ) : (
+                    <div className="text-[9px] bg-slate-100 border border-slate-200 p-2 rounded text-slate-405 text-slate-400 mt-2 font-semibold">
+                      Decryption restricted to Super Administrator.
+                    </div>
+                  )}
+                </div>
+              )
             ) : (
               /* Non-confidential display */
               <div className="space-y-3 text-xs">
@@ -534,6 +629,60 @@ const ComplaintDetails = () => {
         </div>
 
       </div>
+
+      {/* Identity Reveal Modal Dialog */}
+      {showRevealModal && (
+        <div className="fixed inset-0 bg-black/65 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
+          <div className="bg-white rounded-xl max-w-md w-full border border-slate-200 shadow-xl overflow-hidden">
+            <div className="bg-rose-50 border-b border-rose-100 p-4 flex items-center space-x-2.5">
+              <AlertTriangle className="h-5 w-5 text-rose-650 animate-pulse" />
+              <h3 className="font-extrabold text-gov-navy text-xs uppercase tracking-wider">Identity Disclosure Authorization</h3>
+            </div>
+            
+            <form onSubmit={handleRevealIdentity} className="p-5 space-y-4 text-xs font-medium">
+              <p className="text-slate-500 leading-normal">
+                You are performing a restricted action. Decrypting the citizen's profile requires a mandatory operational justification. This disclosure will be written to the system audit ledger containing your identity and IP address.
+              </p>
+              
+              {revealError && (
+                <div className="p-2.5 bg-rose-50 border border-rose-250 text-rose-800 rounded font-semibold flex items-center space-x-2">
+                  <AlertCircle className="h-4 w-4" />
+                  <span>{revealError}</span>
+                </div>
+              )}
+              
+              <div>
+                <label className="block text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1.5">Reason for Disclosure</label>
+                <textarea
+                  rows="3"
+                  required
+                  placeholder="Provide detailed legal or operational reason for decrypting reporter profile info..."
+                  value={revealReason}
+                  onChange={(e) => setRevealReason(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-rose-500 font-medium text-slate-805 text-slate-800"
+                />
+              </div>
+
+              <div className="flex space-x-3 pt-2.5">
+                <button
+                  type="submit"
+                  className="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 rounded-lg text-[10px] uppercase tracking-wider transition-smooth cursor-pointer shadow-sm text-center"
+                >
+                  Confirm & Decrypt
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowRevealModal(false)}
+                  className="px-4 border border-slate-200 hover:bg-slate-50 text-slate-500 hover:text-slate-700 font-bold py-2.5 rounded-lg text-[10px] uppercase tracking-wider transition-smooth cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

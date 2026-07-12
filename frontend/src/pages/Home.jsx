@@ -32,6 +32,15 @@ const Home = () => {
           <p className="mt-6 text-slate-300 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
             A state-of-the-art secure platform for citizens to report drug distribution, trafficking, and illicit substance operations. Protecting your identity is our highest national priority.
           </p>
+
+          <div className="mt-8 p-4 bg-slate-950/40 border border-gov-gold/30 rounded-xl max-w-lg mx-auto">
+            <p className="text-gov-gold font-serif italic text-base sm:text-lg tracking-wide">
+              "Narcotics is a dirty business..."
+            </p>
+            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mt-1">
+              — Sagar Alias Jacky
+            </span>
+          </div>
           
           <div className="mt-10 flex flex-wrap justify-center gap-4">
             <Link

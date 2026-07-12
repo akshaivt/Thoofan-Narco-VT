@@ -36,6 +36,7 @@ import AIInsights from '../pages/admin/AIInsights';
 
 // Super Admin Pages
 import SuperAdminDashboard from '../pages/superadmin/SuperAdminDashboard';
+import SuperAdminPanel from '../pages/superadmin/SuperAdminPanel';
 
 const AppRoutes = () => {
   return (
@@ -98,6 +99,7 @@ const AppRoutes = () => {
         }
       >
         <Route path="dashboard" element={<SuperAdminDashboard />} />
+        <Route path="system" element={<SuperAdminPanel />} />
       </Route>
 
       {/* Catch-all Redirect */}

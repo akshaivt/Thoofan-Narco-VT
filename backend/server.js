@@ -54,6 +54,7 @@ app.use('/api/auth', authRoutes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/complaints', require('./routes/complaintRoutes'));
 app.use('/api/analytics', require('./routes/analyticsRoutes'));
+app.use('/api/system', require('./routes/systemRoutes'));
 
 // Root Check Endpoint
 app.get('/', (req, res) => {

@@ -284,14 +284,19 @@ const Sidebar = () => {
                 System Administration
               </span>
               <div className="mt-2 space-y-1">
-                <div className="text-slate-600 text-xs px-4 py-1.5 flex items-center space-x-2">
-                  <Database className="h-4 w-4 text-gov-blue" />
-                  <span>Audit Logs</span>
-                </div>
-                <div className="text-slate-600 text-xs px-4 py-1.5 flex items-center space-x-2">
-                  <Lock className="h-4 w-4 text-gov-blue" />
-                  <span>Keys Management</span>
-                </div>
+                <NavLink
+                  to="/superadmin/system"
+                  className={({ isActive }) =>
+                    `flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-smooth ${
+                      isActive
+                        ? 'bg-gov-blue text-white shadow-md'
+                        : 'text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+                    }`
+                  }
+                >
+                  <Database className="h-5 w-5" />
+                  <span>System Operations</span>
+                </NavLink>
               </div>
             </div>
           </>

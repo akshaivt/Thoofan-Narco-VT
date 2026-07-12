@@ -171,6 +171,49 @@ const TrackReport = () => {
             </p>
           </div>
 
+          {/* Status Timeline History */}
+          <div className="border-t border-slate-100 pt-4 space-y-4">
+            <h4 className="flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wide text-gov-navy">
+              <ClipboardList className="h-4.5 w-4.5 text-gov-gold shrink-0" />
+              <span>Audit Timeline Checkpoints</span>
+            </h4>
+
+            <div className="relative pl-6 border-l-2 border-slate-200 ml-3.5 space-y-5 text-xs">
+              {complaint.timeline && complaint.timeline.length > 0 ? (
+                complaint.timeline.map((checkpoint, idx) => (
+                  <div key={idx} className="relative">
+                    {/* Circle Node */}
+                    <span className="absolute -left-[31px] top-0.5 h-4 w-4 bg-white border-2 border-gov-navy rounded-full flex items-center justify-center">
+                      <span className="h-1.5 w-1.5 bg-gov-gold rounded-full"></span>
+                    </span>
+                    <div>
+                      <span className="inline-block bg-slate-100 px-2 py-0.5 rounded text-[9px] font-extrabold uppercase text-slate-655 text-slate-600 tracking-wider">
+                        {checkpoint.status}
+                      </span>
+                      <span className="text-[10px] text-slate-400 font-medium block mt-1">
+                        Updated on {new Date(checkpoint.updatedAt).toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="relative">
+                  <span className="absolute -left-[31px] top-0.5 h-4 w-4 bg-white border-2 border-gov-navy rounded-full flex items-center justify-center">
+                    <span className="h-1.5 w-1.5 bg-gov-gold rounded-full"></span>
+                  </span>
+                  <div>
+                    <span className="inline-block bg-slate-100 px-2 py-0.5 rounded text-[9px] font-extrabold uppercase text-slate-600 tracking-wider">
+                      Submitted / Filed
+                    </span>
+                    <span className="text-[10px] text-slate-400 block mt-1">
+                      Received at {new Date(complaint.createdAt).toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Official admin notes */}
           <div className="border-t border-slate-100 pt-4 space-y-3">
             <h4 className="flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wide text-gov-navy">

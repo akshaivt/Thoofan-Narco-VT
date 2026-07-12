@@ -6,12 +6,16 @@ const { uploadEvidence } = require('../middleware/uploadMiddleware');
 const {
   createComplaint,
   getMyComplaints,
-  getComplaintByCode
+  getComplaintByCode,
+  getMyNotifications,
+  markNotificationRead
 } = require('../controllers/complaintController');
 const {
   getAllComplaints,
   updateComplaintStatus,
-  updateComplaintNotes
+  updateComplaintNotes,
+  revealIdentity,
+  downloadPDF
 } = require('../controllers/adminComplaintController');
 
 // ==========================================
@@ -72,6 +76,38 @@ router.put(
   protect,
   authorize('admin', 'superadmin'),
   updateComplaintNotes
+);
+
+// GET /api/complaints/citizen/notifications - Get Citizen notifications (Citizen only)
+router.get(
+  '/citizen/notifications',
+  protect,
+  authorize('citizen'),
+  getMyNotifications
+);
+
+// PUT /api/complaints/citizen/notifications/:id/read - Mark notification read (Citizen only)
+router.put(
+  '/citizen/notifications/:id/read',
+  protect,
+  authorize('citizen'),
+  markNotificationRead
+);
+
+// GET /api/complaints/admin/:id/pdf - Download report PDF (Admin/Super Admin)
+router.get(
+  '/admin/:id/pdf',
+  protect,
+  authorize('admin', 'superadmin'),
+  downloadPDF
+);
+
+// POST /api/complaints/admin/:id/reveal-identity - Reveal confidential citizen details (Super Admin only)
+router.post(
+  '/admin/:id/reveal-identity',
+  protect,
+  authorize('superadmin'),
+  revealIdentity
 );
 
 module.exports = router;

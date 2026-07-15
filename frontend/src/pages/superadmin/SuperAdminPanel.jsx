@@ -21,7 +21,8 @@ const SuperAdminPanel = () => {
     email: '',
     phone: '',
     password: '',
-    role: 'admin'
+    role: 'admin',
+    policeStation: ''
   });
   const [successMsg, setSuccessMsg] = useState('');
 
@@ -103,7 +104,7 @@ const SuperAdminPanel = () => {
       const response = await api.post('/system/admins', newAdmin);
       if (response.data.success) {
         setSuccessMsg(`Account created: ${response.data.message}`);
-        setNewAdmin({ name: '', email: '', phone: '', password: '', role: 'admin' });
+        setNewAdmin({ name: '', email: '', phone: '', password: '', role: 'admin', policeStation: '' });
         // Refresh list
         const refreshed = await api.get('/system/admins');
         setAdmins(refreshed.data.admins);
@@ -329,6 +330,27 @@ const SuperAdminPanel = () => {
                     <option value="superadmin">Console Manager (superadmin)</option>
                   </select>
                 </div>
+
+                {newAdmin.role === 'admin' && (
+                  <div>
+                    <label className="text-[10px] text-slate-400 font-bold uppercase">Assigned Police Station</label>
+                    <select
+                      value={newAdmin.policeStation}
+                      onChange={(e) => setNewAdmin({ ...newAdmin, policeStation: e.target.value })}
+                      className="w-full mt-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-850 focus:outline-none focus:border-gov-blue font-semibold"
+                    >
+                      <option value="">Central Intelligence (All Stations)</option>
+                      <option value="Connaught Place Police Station">Connaught Place Police Station</option>
+                      <option value="Kashmere Gate Police Station">Kashmere Gate Police Station</option>
+                      <option value="Hauz Khas Police Station">Hauz Khas Police Station</option>
+                      <option value="Mayur Vihar Police Station">Mayur Vihar Police Station</option>
+                      <option value="Rajouri Garden Police Station">Rajouri Garden Police Station</option>
+                      <option value="Sector 29 Police Station">Sector 29 Police Station</option>
+                      <option value="Sector 20 Police Station">Sector 20 Police Station</option>
+                      <option value="Indirapuram Police Station">Indirapuram Police Station</option>
+                    </select>
+                  </div>
+                )}
 
                 <button
                   type="submit"

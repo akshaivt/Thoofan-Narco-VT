@@ -27,7 +27,8 @@ router.get('/me', protect, (req, res) => {
       name: decrypt(req.user.name),
       email: decrypt(req.user.email),
       phone: decrypt(req.user.phone),
-      role: req.user.role
+      role: req.user.role,
+      policeStation: req.user.policeStation
     }
   });
 });

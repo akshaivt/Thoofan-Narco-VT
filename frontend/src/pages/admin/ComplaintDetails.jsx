@@ -328,6 +328,14 @@ const ComplaintDetails = () => {
                     </p>
                   </div>
                 )}
+                {complaint.nearestPoliceStation && (
+                  <div className="sm:col-span-2 border-t border-slate-200 pt-2.5 mt-1">
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Assigned Nearest Police Station</span>
+                    <p className="text-slate-800 font-bold mt-1">
+                      {complaint.nearestPoliceStation}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 

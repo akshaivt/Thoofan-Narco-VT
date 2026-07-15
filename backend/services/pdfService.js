@@ -74,6 +74,9 @@ const buildComplaintPDF = (complaint, res) => {
   if (complaint.latitude && complaint.longitude) {
     doc.text(`GPS Coordinates: Lat ${complaint.latitude}, Lng ${complaint.longitude}`);
   }
+  if (complaint.nearestPoliceStation) {
+    doc.text(`Nearest Police Station: ${complaint.nearestPoliceStation}`);
+  }
 
   doc.moveDown(1.5);
 

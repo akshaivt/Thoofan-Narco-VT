@@ -35,6 +35,10 @@ const userSchema = new mongoose.Schema(
       enum: ['citizen', 'admin', 'superadmin'],
       default: 'citizen'
     },
+    policeStation: {
+      type: String,
+      default: null
+    },
     isVerified: {
       type: Boolean,
       default: false

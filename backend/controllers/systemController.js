@@ -190,7 +190,7 @@ const getAdminsList = async (req, res, next) => {
  */
 const createAdminAccount = async (req, res, next) => {
   try {
-    const { name, email, phone, password, role } = req.body;
+    const { name, email, phone, password, role, policeStation } = req.body;
 
     if (!name || !email || !password || !role) {
       res.status(400);
@@ -216,6 +216,7 @@ const createAdminAccount = async (req, res, next) => {
       phone: phone ? phone.trim() : '',
       password: hashedPassword,
       role: role === 'superadmin' ? 'superadmin' : 'admin',
+      policeStation: role === 'admin' ? (policeStation || null) : null,
       isVerified: true // Administrative accounts are pre-verified
     });
 

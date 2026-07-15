@@ -80,6 +80,10 @@ const complaintSchema = new mongoose.Schema(
       type: Number,
       default: null
     },
+    nearestPoliceStation: {
+      type: String,
+      default: ''
+    },
     incidentDate: {
       type: Date,
       required: [true, 'Incident date is required']

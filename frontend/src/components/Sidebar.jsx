@@ -316,6 +316,11 @@ const Sidebar = () => {
           <span className="inline-block mt-1 px-2 py-0.5 text-[9px] font-bold tracking-wider uppercase bg-gov-light text-gov-blue rounded-full border border-slate-200">
             {user.role}
           </span>
+          {user.policeStation && (
+            <p className="text-[9px] text-slate-400 font-bold uppercase mt-2 border-t border-slate-205 border-slate-200 pt-1.5 leading-normal">
+              {user.policeStation}
+            </p>
+          )}
         </div>
         {renderLinks()}
       </div>

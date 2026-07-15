@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import UploadBox from '../../components/UploadBox';
@@ -17,6 +17,43 @@ import {
 const SubmitReport = () => {
   const navigate = useNavigate();
 
+  const POLICE_STATIONS = [
+    { name: 'Connaught Place Police Station', district: 'Central Delhi', lat: 28.6304, lng: 77.2177 },
+    { name: 'Kashmere Gate Police Station', district: 'North Delhi', lat: 28.6675, lng: 77.2282 },
+    { name: 'Hauz Khas Police Station', district: 'South Delhi', lat: 28.5494, lng: 77.2044 },
+    { name: 'Mayur Vihar Police Station', district: 'East Delhi', lat: 28.6015, lng: 77.2974 },
+    { name: 'Rajouri Garden Police Station', district: 'West Delhi', lat: 28.6415, lng: 77.1245 },
+    { name: 'Sector 29 Police Station', district: 'Gurugram', lat: 28.4682, lng: 77.0620 },
+    { name: 'Sector 20 Police Station', district: 'Noida', lat: 28.5776, lng: 77.3221 },
+    { name: 'Indirapuram Police Station', district: 'Ghaziabad', lat: 28.6373, lng: 77.3705 }
+  ];
+
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371; // km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+      Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  };
+
+  const findNearestStation = (userLat, userLng) => {
+    let nearest = null;
+    let minDistance = Infinity;
+
+    POLICE_STATIONS.forEach(station => {
+      const dist = calculateDistance(userLat, userLng, station.lat, station.lng);
+      if (dist < minDistance) {
+        minDistance = dist;
+        nearest = { ...station, distance: dist.toFixed(2) };
+      }
+    });
+    return nearest;
+  };
+
   const [formData, setFormData] = useState({
     activityType: '',
     description: '',
@@ -25,6 +62,7 @@ const SubmitReport = () => {
     address: '',
     latitude: '',
     longitude: '',
+    nearestPoliceStation: '',
     incidentDate: '',
     incidentTime: '',
     isConfidential: false
@@ -35,6 +73,8 @@ const SubmitReport = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [submittedId, setSubmittedId] = useState('');
+  const [detectingLocation, setDetectingLocation] = useState(false);
+  const [locationAlert, setLocationAlert] = useState('');
 
   const activityOptions = [
     'Drug Trafficking',
@@ -55,6 +95,62 @@ const SubmitReport = () => {
     'Noida',
     'Ghaziabad'
   ];
+
+  const handleDetectLocation = () => {
+    if (!navigator.geolocation) {
+      setError('Geolocation is not supported by your browser.');
+      return;
+    }
+
+    setDetectingLocation(true);
+    setError('');
+    setLocationAlert('');
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        const nearest = findNearestStation(lat, lng);
+
+        setFormData(prev => ({
+          ...prev,
+          latitude: lat,
+          longitude: lng,
+          nearestPoliceStation: nearest ? nearest.name : '',
+          district: nearest ? nearest.district : prev.district
+        }));
+
+        if (nearest) {
+          setLocationAlert(`Nearest Station: ${nearest.name} (${nearest.distance} km away) in ${nearest.district}.`);
+        } else {
+          setLocationAlert(`Coordinates detected: Lat ${lat.toFixed(4)}, Lng ${lng.toFixed(4)}`);
+        }
+        setDetectingLocation(false);
+      },
+      (err) => {
+        console.error(err);
+        setError('Location permission denied or timed out. Please enter coordinates manually.');
+        setDetectingLocation(false);
+      },
+      { enableHighAccuracy: true, timeout: 8000 }
+    );
+  };
+
+  useEffect(() => {
+    const lat = parseFloat(formData.latitude);
+    const lng = parseFloat(formData.longitude);
+    if (!isNaN(lat) && !isNaN(lng)) {
+      const nearest = findNearestStation(lat, lng);
+      if (nearest && nearest.name !== formData.nearestPoliceStation) {
+        setFormData(prev => ({
+          ...prev,
+          nearestPoliceStation: nearest.name,
+          district: nearest.district
+        }));
+        setLocationAlert(`Nearest Station Auto-Calculated: ${nearest.name} (${nearest.distance} km away) in ${nearest.district}.`);
+      }
+    }
+  }, [formData.latitude, formData.longitude]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -295,13 +391,32 @@ const SubmitReport = () => {
               />
             </div>
 
-            {/* Mock Coordinates (Location Picker) */}
-            <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg">
-              <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">
-                Coordinates (Optional Location Geolocation)
-              </span>
+            {/* Coordinates & Nearest Police Station (Location Picker) */}
+            <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                  Coordinates & Police Routing
+                </span>
+                <button
+                  type="button"
+                  onClick={handleDetectLocation}
+                  disabled={detectingLocation}
+                  className="bg-gov-blue hover:bg-gov-navy text-white text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-1.5 rounded transition-smooth disabled:bg-slate-300 cursor-pointer"
+                >
+                  {detectingLocation ? 'Locating...' : 'Auto-Detect Location'}
+                </button>
+              </div>
+
+              {locationAlert && (
+                <div className="p-2.5 bg-emerald-50 border border-emerald-250 text-emerald-800 text-[10px] font-semibold rounded flex items-center space-x-1.5">
+                  <CheckCircle className="h-4 w-4 text-emerald-600 shrink-0" />
+                  <span>{locationAlert}</span>
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
+                  <label className="block text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-1">Latitude</label>
                   <input
                     type="number"
                     step="any"
@@ -312,6 +427,7 @@ const SubmitReport = () => {
                   />
                 </div>
                 <div>
+                  <label className="block text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-1">Longitude</label>
                   <input
                     type="number"
                     step="any"
@@ -322,9 +438,17 @@ const SubmitReport = () => {
                   />
                 </div>
               </div>
-              <p className="text-[9px] text-slate-400 mt-2">
-                Note: Maps and automated geolocator components will be loaded in future platform iterations.
-              </p>
+
+              <div>
+                <label className="block text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-1">Nearest Police Station Assigned</label>
+                <input
+                  type="text"
+                  value={formData.nearestPoliceStation}
+                  onChange={(e) => setFormData({ ...formData, nearestPoliceStation: e.target.value })}
+                  className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded text-xs text-slate-850 focus:outline-none focus:border-gov-blue font-semibold"
+                  placeholder="Auto-calculated or manually specified station..."
+                />
+              </div>
             </div>
           </div>
 

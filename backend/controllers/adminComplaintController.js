@@ -16,7 +16,12 @@ const getAllComplaints = async (req, res, next) => {
     const { complaintId, status, district, activityType, incidentDate } = req.query;
     const query = {};
 
-    // 1. Apply Search and Filters
+    // 1. Station Officer filter: limit complaints to their assigned police station
+    if (req.user.role === 'admin' && req.user.policeStation) {
+      query.nearestPoliceStation = req.user.policeStation;
+    }
+
+    // 2. Apply Search and Filters
     if (complaintId) {
       // Regex case-insensitive match for partial search
       query.complaintId = { $regex: complaintId.trim(), $options: 'i' };

@@ -23,6 +23,7 @@ const createComplaintSchema = z.object({
     message: 'Valid incident date is required'
   }),
   incidentTime: z.string().trim().min(1, { message: 'Incident time is required' }),
+  nearestPoliceStation: z.string().trim().optional().default(''),
   isConfidential: z.preprocess(
     (val) => val === 'true' || val === true,
     z.boolean().default(false)

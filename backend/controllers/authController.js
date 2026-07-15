@@ -164,7 +164,8 @@ const login = async (req, res, next) => {
         name: decrypt(user.name),
         email: decrypt(user.email),
         phone: decrypt(user.phone),
-        role: user.role
+        role: user.role,
+        policeStation: user.policeStation
       }
     });
   } catch (error) {

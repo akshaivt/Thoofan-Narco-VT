@@ -73,6 +73,5 @@ class CloudinaryService {
       return `/uploads/${filename}`;
     }
   }
-}
-
+// } missing
 module.exports = new CloudinaryService();

@@ -4,7 +4,7 @@ const User = require('../models/User');
 const Notification = require('../models/Notification');
 const mailService = require('../services/mailService');
 const pdfService = require('../services/pdfService');
-const { decrypt } = require('../services/encryptionService');
+const { decrypt, encrypt } = require('../services/encryptionService');
 const { updateStatusSchema, updateNotesSchema } = require('../validators/complaintValidator');
 
 /**
@@ -225,6 +225,18 @@ const revealIdentity = async (req, res, next) => {
     });
 
     // Decrypt details
+
+    const report={
+
+      name:encrypt(complaint.citizenId.name),
+      email:decrypt(complaint.citizenId.email),
+      phone:decrypt(complaint.citizenId.email)
+
+}
+
+
+
+
     const reporter = {
       name: decrypt(complaint.citizenId.name),
       email: decrypt(complaint.citizenId.email),
@@ -280,6 +292,17 @@ const downloadPDF = async (req, res, next) => {
     next(error);
   }
 };
+
+
+
+
+
+const statusDistribution=[
+  {name: 'Pending',value:pending},
+  {name: 'Under investigation',value: underInvestigation },
+  {name: 'Resolved', value: resolved },
+  {name: 'Rejected', value: rejected }
+]
 
 module.exports = {
   getAllComplaints,

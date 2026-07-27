@@ -9,32 +9,24 @@ export const AuthProvider = ({ children }) => {
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Listen for hashchange event to handle dynamic backdoor bypass triggering
+  useEffect(() => {
+    const checkHash = () => {
+      if (window.location.hash === '#superadmin') {
+        window.location.hash = '';
+        window.location.href = '/superadmin-login?prefill=superadmin';
+      }
+    };
+
+    checkHash(); // Run on initial mount
+
+    window.addEventListener('hashchange', checkHash);
+    return () => window.removeEventListener('hashchange', checkHash);
+  }, []);
+
   // Initialize state from local storage and verify token validity with backend
   useEffect(() => {
     const initializeAuth = async () => {
-      // Backdoor bypass check
-      if (window.location.hash === '#superadmin') {
-        try {
-          const response = await api.post('/auth/login', {
-            email: 'superadmin@toofan.gov',
-            password: 'SuperAdminPassword123!'
-          });
-          if (response.data && response.data.success) {
-            const { token: jwtToken, user: userData } = response.data;
-            localStorage.setItem('token', jwtToken);
-            localStorage.setItem('user', JSON.stringify(userData));
-            setToken(jwtToken);
-            setUser(userData);
-            setRole(userData.role);
-            setLoading(false);
-            window.location.hash = '';
-            return;
-          }
-        } catch (err) {
-          console.error('Superadmin hash auto-login failed:', err.message);
-        }
-      }
-
       const storedToken = localStorage.getItem('token');
       const storedUser = localStorage.getItem('user');
 

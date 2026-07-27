@@ -1,20 +1,13 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 const User = require('../models/User');
+const PoliceStation = require('../models/PoliceStation');
 const authService = require('../services/authService');
 
 const admins = [
   {
-    name: 'Toofan Admin Desk',
-    email: 'admin@toofan.gov',
-    password: 'AdminPassword123!',
-    role: 'admin',
-    phone: '1112223333',
-    isVerified: true
-  },
-  {
-    name: 'Toofan Super Admin',
-    email: 'superadmin@toofan.gov',
+    name: 'NarcoVT Super Admin',
+    email: 'superadmin@narcovt.gov',
     password: 'SuperAdminPassword123!',
     role: 'superadmin',
     phone: '4445556666',
@@ -26,7 +19,7 @@ const seedAdmins = async () => {
   try {
     // Connect to database
     console.log('Connecting to database for seeding...');
-    await mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/operation_toofan');
+    await mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/narco_vt');
     console.log('Database connected.');
 
     // Remove existing admin/superadmin accounts to avoid duplicates
@@ -44,6 +37,9 @@ const seedAdmins = async () => {
       
       console.log(`Seeded user: ${adminUser.name} (${adminUser.role}) -> ${adminUser.email}`);
     }
+
+    console.log('Cleaning existing police stations...');
+    await PoliceStation.deleteMany({});
 
     console.log('Database seeding completed successfully!');
     process.exit(0);

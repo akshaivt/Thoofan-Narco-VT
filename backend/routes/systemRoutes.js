@@ -7,11 +7,18 @@ const {
   getAuditLogs,
   getSystemStats,
   getAdminsList,
-  createAdminAccount
+  createAdminAccount,
+  getPoliceStations,
+  addPoliceStation
 } = require('../controllers/systemController');
 
-// All system routes are restricted to Super Admin role
+// All system routes require authentication
 router.use(protect);
+
+// Citizens and Admins can fetch police stations list
+router.get('/police-stations', getPoliceStations);
+
+// Only Super Admins can manage system, backups, audits and stations
 router.use(authorize('superadmin'));
 
 router.post('/backup', exportBackup);
@@ -20,5 +27,6 @@ router.get('/audit-logs', getAuditLogs);
 router.get('/stats', getSystemStats);
 router.get('/admins', getAdminsList);
 router.post('/admins', createAdminAccount);
+router.post('/police-stations', addPoliceStation);
 
 module.exports = router;

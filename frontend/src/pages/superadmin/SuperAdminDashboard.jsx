@@ -36,8 +36,8 @@ const SuperAdminDashboard = () => {
             <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs">
               <span className="font-bold text-gov-navy uppercase tracking-wider block">Admin Seed Accounts</span>
               <div className="mt-2 space-y-1.5 text-slate-600 font-mono">
-                <p>1. admin@toofan.gov [Active]</p>
-                <p>2. superadmin@toofan.gov [Active]</p>
+                <p>1. admin@narcovt.gov [Active]</p>
+                <p>2. superadmin@narcovt.gov [Active]</p>
               </div>
             </div>
 

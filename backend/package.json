@@ -1,7 +1,7 @@
 {
-  "name": "operation-toofan-backend",
+  "name": "narcovt-backend",
   "version": "1.0.0",
-  "description": "Operation Toofan – AI-Powered Confidential Drug Reporting System Backend",
+  "description": "NarcoVT – AI-Powered Confidential Drug Reporting System Backend",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

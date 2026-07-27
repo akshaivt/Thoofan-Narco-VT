@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 
 const ALGORITHM = 'aes-256-cbc';
-const SECRET_KEY_STRING = process.env.ENCRYPTION_KEY || 'operation_toofan_narcotics_secret_encryption_key_2026';
+const SECRET_KEY_STRING = process.env.ENCRYPTION_KEY || 'narcovt_narcotics_secret_encryption_key_2026';
 
 // Derive a secure 32-byte key using SHA-256
 const KEY = crypto.createHash('sha256').update(SECRET_KEY_STRING).digest();
@@ -19,9 +19,7 @@ const encrypt = (text) => {
   const cipher = crypto.createCipheriv(ALGORITHM, KEY, iv);
   let encrypted = cipher.update(text, 'utf8', 'hex');
   encrypted += cipher.final('hex');
-  return `${iv.toString('hex')}:${
-    
-  }`;
+  return `${iv.toString('hex')}:${encrypted}`;
 };
 
 /**

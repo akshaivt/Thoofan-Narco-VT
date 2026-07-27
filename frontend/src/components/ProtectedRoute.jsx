@@ -25,7 +25,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
   // Not logged in -> Redirect to login
   if (!user) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/" state={{ from: location }} replace />;
   }
 
   // Check if role is authorized

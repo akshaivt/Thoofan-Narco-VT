@@ -29,7 +29,7 @@ const Contact = () => {
           <div className="space-y-6">
             <h3 className="text-lg font-bold uppercase tracking-wider text-gov-gold">Headquarters</h3>
             <p className="text-sm text-slate-300 leading-relaxed">
-              Operation Toofan Command Center
+              NarcoVT Command Center
               <br />Intelligence Bureau
               <br />New Delhi, India
             </p>
@@ -41,7 +41,7 @@ const Contact = () => {
               </div>
               <div className="flex items-center space-x-3 text-sm">
                 <Mail className="h-5 w-5 text-gov-gold" />
-                <span>support@toofan.gov.in</span>
+                <span>support@narcovt.gov.in</span>
               </div>
               <div className="flex items-center space-x-3 text-sm">
                 <MapPin className="h-5 w-5 text-gov-gold" />

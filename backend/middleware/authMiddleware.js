@@ -13,7 +13,7 @@ const protect = async (req, res, next) => {
       token = req.headers.authorization.split(' ')[1];
 
       // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'super_secret_toofan_key_12345!');
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'super_secret_narcovt_key_12345!');
 
       // Fetch user from DB, excluding password
       const user = await User.findById(decoded.id).select('-password');

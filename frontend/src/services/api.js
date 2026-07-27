@@ -32,7 +32,7 @@ api.interceptors.response.use(
       if (localStorage.getItem('token') && !message.includes('not verified')) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        window.location.href = '/login?expired=true';
+        window.location.href = '/?expired=true';
       }
     }
     return Promise.reject(error);

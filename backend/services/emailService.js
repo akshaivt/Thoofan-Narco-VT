@@ -4,7 +4,7 @@ const SMTP_HOST = process.env.SMTP_HOST || 'smtp.mailtrap.io';
 const SMTP_PORT = parseInt(process.env.SMTP_PORT) || 2525;
 const SMTP_USER = process.env.SMTP_USER || '';
 const SMTP_PASS = process.env.SMTP_PASS || '';
-const SMTP_FROM = process.env.SMTP_FROM || 'noreply@toofan.gov';
+const SMTP_FROM = process.env.SMTP_FROM || 'noreply@narcovt.gov';
 
 const transporter = nodemailer.createTransport({
   host: SMTP_HOST,
@@ -45,7 +45,7 @@ Text: ${text}
 
   try {
     await transporter.sendMail({
-      from: `"Operation Toofan Intelligence Center" <${SMTP_FROM}>`,
+      from: `"NarcoVT Intelligence Center" <${SMTP_FROM}>`,
       to,
       subject,
       text,
@@ -59,10 +59,10 @@ Text: ${text}
 };
 
 const sendSubmissionEmail = async (email, name, complaintId) => {
-  const subject = `[Operation Toofan] Confidential Complaint Filed - ID: ${complaintId}`;
-  const text = `Hello ${name},\n\nYour drug activity complaint has been filed successfully. Complaint Tracking ID: ${complaintId}.\n\nYou can track the investigation progress live on your Citizen Dashboard using this ID.\n\nStay Safe,\nOperation Toofan Command Center`;
+  const subject = `[NarcoVT] Confidential Complaint Filed - ID: ${complaintId}`;
+  const text = `Hello ${name},\n\nYour drug activity complaint has been filed successfully. Complaint Tracking ID: ${complaintId}.\n\nYou can track the investigation progress live on your Citizen Dashboard using this ID.\n\nStay Safe,\nNarcoVT Command Center`;
   const html = `
-    <h3>Operation Toofan Security Intake Receipt</h3>
+    <h3>NarcoVT Security Intake Receipt</h3>
     <p>Hello <strong>${name}</strong>,</p>
     <p>Your drug activity complaint has been registered. Tracking ID: <strong>${complaintId}</strong>.</p>
     <p>You can track the status of this report live on the Citizen Portal.</p>
@@ -72,10 +72,10 @@ const sendSubmissionEmail = async (email, name, complaintId) => {
 };
 
 const sendStatusChangeEmail = async (email, name, complaintId, newStatus) => {
-  const subject = `[Operation Toofan] Status Update for Report ID: ${complaintId}`;
+  const subject = `[NarcoVT] Status Update for Report ID: ${complaintId}`;
   const text = `Hello ${name},\n\nThe status of your complaint ${complaintId} has changed to: ${newStatus}.\n\nPlease log in to your dashboard to inspect official notes.\n\nCommand Center Desk`;
   const html = `
-    <h3>Operation Toofan Status Alert</h3>
+    <h3>NarcoVT Status Alert</h3>
     <p>Hello <strong>${name}</strong>,</p>
     <p>The status of your complaint <strong>${complaintId}</strong> has been updated to: <span style="font-weight: bold; color: #1e3a8a;">${newStatus}</span>.</p>
     <p>Please log in to your dashboard to inspect official notes.</p>
@@ -85,7 +85,7 @@ const sendStatusChangeEmail = async (email, name, complaintId, newStatus) => {
 };
 
 const sendPasswordResetEmail = async (email, name, otpCode) => {
-  const subject = `[Operation Toofan] Reset Password Verification OTP`;
+  const subject = `[NarcoVT] Reset Password Verification OTP`;
   const text = `Hello ${name},\n\nWe received a request to reset your password. Your Verification OTP is: ${otpCode}.\n\nThis OTP will expire in 10 minutes.\n\nCommand Center Desk`;
   const html = `
     <h3>Password Recovery Desk</h3>

@@ -58,7 +58,7 @@ class CloudinaryService {
     try {
       const result = await cloudinary.uploader.upload(localFilePath, {
         resource_type: resourceType,
-        folder: 'operation_toofan'
+        folder: 'narco_vt'
       });
 
       // Remove file from local disk to save server space
@@ -73,5 +73,6 @@ class CloudinaryService {
       return `/uploads/${filename}`;
     }
   }
-// } missing
+}
+
 module.exports = new CloudinaryService();

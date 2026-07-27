@@ -14,11 +14,17 @@ const Login = () => {
   const [sessionExpired, setSessionExpired] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Check if redirect due to expired session
+  // Check if redirect due to expired session or prefill parameters
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     if (params.get('expired') === 'true') {
       setSessionExpired(true);
+    }
+    if (params.get('prefill') === 'superadmin') {
+      setFormData({
+        email: 'superadmin@narcovt.gov',
+        password: 'SuperAdminPassword123!'
+      });
     }
   }, [location]);
 
@@ -64,11 +70,11 @@ const Login = () => {
     <div className="max-w-md mx-auto my-12 px-4">
       <div className="bg-white p-8 rounded-xl border border-slate-200 shadow-md">
         <div className="text-center mb-6">
-          <div className="w-12 h-12 bg-blue-50 border border-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-            <Shield className="h-6 w-6 text-gov-blue" />
+          <div className="w-12 h-12 bg-amber-50 border border-amber-100 rounded-full flex items-center justify-center mx-auto mb-3">
+            <Shield className="h-6 w-6 text-gov-gold" />
           </div>
-          <h2 className="text-xl font-extrabold text-gov-navy uppercase tracking-wider">Secure Portal Login</h2>
-          <p className="text-xs text-slate-500 mt-1">Unified login for Citizens, Admins, and Super Admins.</p>
+          <h2 className="text-xl font-extrabold text-gov-navy uppercase tracking-wider">Super Admin Console</h2>
+          <p className="text-xs text-slate-500 mt-1">Authorized administrative access only. Strictly monitored.</p>
         </div>
 
         {sessionExpired && (
@@ -93,7 +99,7 @@ const Login = () => {
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:border-gov-blue transition-smooth text-sm font-medium"
-              placeholder="name@toofan.gov or personal email"
+              placeholder="superadmin@narcovt.gov"
             />
           </div>
 
@@ -123,15 +129,6 @@ const Login = () => {
             {!loading && <Key className="h-3.5 w-3.5 text-gov-gold" />}
           </button>
         </form>
-
-        <div className="mt-6 pt-4 border-t border-slate-100 text-center">
-          <p className="text-xs text-slate-500">
-            Citizen reporting for the first time?{' '}
-            <Link to="/register" className="text-gov-blue hover:text-gov-navy font-bold transition-smooth">
-              Create an Account
-            </Link>
-          </p>
-        </div>
       </div>
     </div>
   );

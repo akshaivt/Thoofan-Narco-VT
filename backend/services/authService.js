@@ -34,7 +34,7 @@ class AuthService {
         role: user.role,
         email: user.email 
       },
-      process.env.JWT_SECRET || 'super_secret_toofan_key_12345!',
+      process.env.JWT_SECRET || 'super_secret_narcovt_key_12345!',
       {
         expiresIn: process.env.JWT_EXPIRES_IN || '7d'
       }

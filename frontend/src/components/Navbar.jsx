@@ -11,11 +11,11 @@ const Navbar = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/');
   };
 
   const getDashboardPath = () => {
-    if (!user) return '/login';
+    if (!user) return '/';
     if (user.role === 'citizen') return '/citizen/dashboard';
     if (user.role === 'admin') return '/admin/dashboard';
     if (user.role === 'superadmin') return '/superadmin/dashboard';
@@ -31,7 +31,7 @@ const Navbar = () => {
             <Shield className="h-8 w-8 text-gov-gold group-hover:scale-105 transition-smooth" />
             <div>
               <span className="font-extrabold text-lg tracking-wider block leading-none text-slate-100 uppercase">
-                Operation Toofan
+                NarcoVT
               </span>
               <span className="text-[10px] text-gov-gold uppercase tracking-widest font-semibold">
                 Confidential Drug Reporting
@@ -77,13 +77,7 @@ const Navbar = () => {
                 </button>
               </div>
             ) : (
-              <div className="flex items-center space-x-3 border-l border-gov-blue pl-4">
-                <Link
-                  to="/login"
-                  className="text-xs font-semibold uppercase tracking-wider px-3 py-2 rounded text-slate-300 hover:text-white transition-smooth"
-                >
-                  Sign In
-                </Link>
+              <div className="flex items-center border-l border-gov-blue pl-4">
                 <Link
                   to="/register"
                   className="text-xs font-bold uppercase tracking-wider px-3.5 py-2 rounded bg-gov-gold hover:bg-amber-400 text-gov-navy transition-smooth shadow-sm"

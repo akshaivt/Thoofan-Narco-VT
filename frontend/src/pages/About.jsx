@@ -5,7 +5,7 @@ const About = () => {
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
       <div className="text-center mb-12">
-        <h1 className="text-3xl font-extrabold text-gov-navy uppercase tracking-wider">About Operation Toofan</h1>
+        <h1 className="text-3xl font-extrabold text-gov-navy uppercase tracking-wider">About NarcoVT</h1>
         <div className="w-16 h-1 bg-gov-gold mx-auto mt-3"></div>
         <p className="text-slate-600 mt-4 max-w-xl mx-auto">
           Learn about our mission, operational structure, and security controls for safe drug reporting.
@@ -21,7 +21,7 @@ const About = () => {
           <div>
             <h3 className="text-lg font-bold text-gov-navy uppercase tracking-wide">Our National Mission</h3>
             <p className="text-slate-600 text-sm mt-2 leading-relaxed">
-              Operation Toofan is a strategic initiative designed to combat illicit drug networks. By combining community vigilance with advanced intelligence processing, we seek to disable supply chains and safeguard communities.
+              NarcoVT is a strategic initiative designed to combat illicit drug networks. By combining community vigilance with advanced intelligence processing, we seek to disable supply chains and safeguard communities.
             </p>
           </div>
         </div>

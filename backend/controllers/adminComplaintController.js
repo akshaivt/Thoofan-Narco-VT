@@ -283,7 +283,7 @@ const downloadPDF = async (req, res, next) => {
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader(
       'Content-Disposition',
-      `attachment; filename=Operation_Toofan_Report_${complaint.complaintId}.pdf`
+      `attachment; filename=NarcoVT_Report_${complaint.complaintId}.pdf`
     );
 
     // Call PDF generator service
@@ -297,12 +297,7 @@ const downloadPDF = async (req, res, next) => {
 
 
 
-const statusDistribution=[
-  {name: 'Pending',value:pending},
-  {name: 'Under investigation',value: underInvestigation },
-  {name: 'Resolved', value: resolved },
-  {name: 'Rejected', value: rejected }
-]
+
 
 module.exports = {
   getAllComplaints,

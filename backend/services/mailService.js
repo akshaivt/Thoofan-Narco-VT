@@ -4,7 +4,7 @@ const SMTP_HOST = process.env.SMTP_HOST || 'smtp.mailtrap.io';
 const SMTP_PORT = parseInt(process.env.SMTP_PORT) || 2525;
 const SMTP_USER = process.env.SMTP_USER || '';
 const SMTP_PASS = process.env.SMTP_PASS || '';
-const SMTP_FROM = process.env.SMTP_FROM || 'noreply@toofan.gov';
+const SMTP_FROM = process.env.SMTP_FROM || 'noreply@narcovt.gov';
 
 const transporter = nodemailer.createTransport({
   host: SMTP_HOST,
@@ -47,7 +47,7 @@ class MailService {
 
     try {
       await transporter.sendMail({
-        from: `"Operation Toofan Command Center" <${SMTP_FROM}>`,
+        from: `"NarcoVT Command Center" <${SMTP_FROM}>`,
         to,
         subject,
         text,
@@ -68,11 +68,11 @@ class MailService {
   async sendVerificationOTP(to, otp) {
     return this.sendEmail({
       to,
-      subject: 'Operation Toofan - Verify Your Account',
+      subject: 'NarcoVT - Verify Your Account',
       text: `Your account verification code is: ${otp}. This code is valid for 10 minutes.`,
       html: `
         <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd; border-radius: 5px;">
-          <h2 style="color: #003366;">Operation Toofan</h2>
+          <h2 style="color: #003366;">NarcoVT</h2>
           <p>Thank you for registering. Please verify your identity using the confidential verification code below:</p>
           <div style="font-size: 24px; font-weight: bold; letter-spacing: 2px; padding: 10px; background-color: #f5f5f5; text-align: center; border-radius: 4px; color: #003366; margin: 20px 0;">
             ${otp}
@@ -91,11 +91,11 @@ class MailService {
   async sendPasswordResetOTP(to, otp) {
     return this.sendEmail({
       to,
-      subject: 'Operation Toofan - Password Reset OTP',
+      subject: 'NarcoVT - Password Reset OTP',
       text: `Your password recovery code is: ${otp}. This code is valid for 10 minutes.`,
       html: `
         <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd; border-radius: 5px;">
-          <h2 style="color: #003366;">Operation Toofan</h2>
+          <h2 style="color: #003366;">NarcoVT</h2>
           <p>We received a password reset request. Please use the verification code below to restore access:</p>
           <div style="font-size: 24px; font-weight: bold; letter-spacing: 2px; padding: 10px; background-color: #f5f5f5; text-align: center; border-radius: 4px; color: #003366; margin: 20px 0;">
             ${otp}
@@ -112,10 +112,10 @@ class MailService {
   async sendSubmissionAlert(to, name, complaintId) {
     return this.sendEmail({
       to,
-      subject: `[Operation Toofan] Confidential Complaint Filed - ID: ${complaintId}`,
+      subject: `[NarcoVT] Confidential Complaint Filed - ID: ${complaintId}`,
       text: `Hello ${name},\n\nYour drug activity complaint has been filed successfully. Tracking ID: ${complaintId}.\n\nYou can track the investigation progress live on your Citizen Dashboard.`,
       html: `
-        <h3>Operation Toofan Security Intake Receipt</h3>
+        <h3>NarcoVT Security Intake Receipt</h3>
         <p>Hello <strong>${name}</strong>,</p>
         <p>Your drug activity complaint has been registered. Tracking ID: <strong>${complaintId}</strong>.</p>
         <p>You can track the status of this report live on the Citizen Portal.</p>
@@ -129,10 +129,10 @@ class MailService {
   async sendStatusAlert(to, name, complaintId, newStatus) {
     return this.sendEmail({
       to,
-      subject: `[Operation Toofan] Status Update for Report ID: ${complaintId}`,
+      subject: `[NarcoVT] Status Update for Report ID: ${complaintId}`,
       text: `Hello ${name},\n\nThe status of your complaint ${complaintId} has changed to: ${newStatus}.\n\nPlease log in to your dashboard to inspect official notes.`,
       html: `
-        <h3>Operation Toofan Status Alert</h3>
+        <h3>NarcoVT Status Alert</h3>
         <p>Hello <strong>${name}</strong>,</p>
         <p>The status of your complaint <strong>${complaintId}</strong> has been updated to: <strong>${newStatus}</strong>.</p>
         <p>Please log in to your dashboard to inspect official notes.</p>

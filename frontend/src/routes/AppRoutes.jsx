@@ -48,7 +48,8 @@ const AppRoutes = () => {
         <Route path="/contact" element={<Contact />} />
         
         {/* Guest Auth Screens */}
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Navigate to="/" replace />} />
+        <Route path="/superadmin-login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/verify-otp" element={<OTPVerification />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

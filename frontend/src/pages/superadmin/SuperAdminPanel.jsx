@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Database, Shield, Settings, Users, ClipboardList, RefreshCw, Key, Download, Upload, PlusCircle, CheckCircle, AlertTriangle 
+  Database, Shield, Settings, Users, ClipboardList, RefreshCw, Key, Download, Upload, PlusCircle, CheckCircle, AlertTriangle, MapPin 
 } from 'lucide-react';
 import api from '../../services/api';
 
@@ -11,6 +11,7 @@ const SuperAdminPanel = () => {
   const [auditLogs, setAuditLogs] = useState([]);
   const [stats, setStats] = useState(null);
   const [admins, setAdmins] = useState([]);
+  const [stations, setStations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState('');
@@ -23,6 +24,14 @@ const SuperAdminPanel = () => {
     password: '',
     role: 'admin',
     policeStation: ''
+  });
+
+  // Form State for creating Station
+  const [newStation, setNewStation] = useState({
+    name: '',
+    district: '',
+    latitude: '',
+    longitude: ''
   });
   const [successMsg, setSuccessMsg] = useState('');
 
@@ -47,6 +56,11 @@ const SuperAdminPanel = () => {
         if (response.data.success) {
           setAdmins(response.data.admins);
         }
+      } else if (activeTab === 'stations') {
+        const response = await api.get('/system/police-stations');
+        if (response.data.success) {
+          setStations(response.data.stations);
+        }
       }
     } catch (err) {
       console.error(err);
@@ -59,6 +73,20 @@ const SuperAdminPanel = () => {
   useEffect(() => {
     fetchTabDetails();
   }, [activeTab]);
+
+  useEffect(() => {
+    const loadStations = async () => {
+      try {
+        const response = await api.get('/system/police-stations');
+        if (response.data && response.data.success) {
+          setStations(response.data.stations);
+        }
+      } catch (err) {
+        console.error('Failed to pre-load stations:', err);
+      }
+    };
+    loadStations();
+  }, []);
 
   const handleBackup = async () => {
     setActionLoading(true);
@@ -116,6 +144,28 @@ const SuperAdminPanel = () => {
     }
   };
 
+  const handleCreateStation = async (e) => {
+    e.preventDefault();
+    setActionLoading(true);
+    setError('');
+    setSuccessMsg('');
+
+    try {
+      const response = await api.post('/system/police-stations', newStation);
+      if (response.data.success) {
+        setSuccessMsg(`Station registered: ${response.data.message}`);
+        setNewStation({ name: '', district: '', latitude: '', longitude: '' });
+        // Refresh list
+        const refreshed = await api.get('/system/police-stations');
+        setStations(refreshed.data.stations);
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to create police station.');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -160,6 +210,15 @@ const SuperAdminPanel = () => {
         >
           <Users className="h-4.5 w-4.5 inline-block mr-1.5" />
           Manage Admins
+        </button>
+        <button
+          onClick={() => setActiveTab('stations')}
+          className={`pb-3 px-4 border-b-2 transition-smooth cursor-pointer ${
+            activeTab === 'stations' ? 'border-gov-navy text-gov-navy' : 'border-transparent text-slate-400 hover:text-slate-650'
+          }`}
+        >
+          <MapPin className="h-4.5 w-4.5 inline-block mr-1.5" />
+          Manage Stations
         </button>
       </div>
 
@@ -272,7 +331,7 @@ const SuperAdminPanel = () => {
               </div>
             </div>
           </div>
-        ) : (
+        ) : activeTab === 'admins' ? (
           /* ADMIN DIRECTORY PANEL */
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Seed account Form */}
@@ -340,14 +399,9 @@ const SuperAdminPanel = () => {
                       className="w-full mt-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-850 focus:outline-none focus:border-gov-blue font-semibold"
                     >
                       <option value="">Central Intelligence (All Stations)</option>
-                      <option value="Connaught Place Police Station">Connaught Place Police Station</option>
-                      <option value="Kashmere Gate Police Station">Kashmere Gate Police Station</option>
-                      <option value="Hauz Khas Police Station">Hauz Khas Police Station</option>
-                      <option value="Mayur Vihar Police Station">Mayur Vihar Police Station</option>
-                      <option value="Rajouri Garden Police Station">Rajouri Garden Police Station</option>
-                      <option value="Sector 29 Police Station">Sector 29 Police Station</option>
-                      <option value="Sector 20 Police Station">Sector 20 Police Station</option>
-                      <option value="Indirapuram Police Station">Indirapuram Police Station</option>
+                      {stations.map((st) => (
+                        <option key={st._id} value={st.name}>{st.name}</option>
+                      ))}
                     </select>
                   </div>
                 )}
@@ -388,6 +442,99 @@ const SuperAdminPanel = () => {
                           }`}>
                             {adm.role}
                           </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* POLICE STATIONS PANEL */
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Register Station Form */}
+            <div className="lg:col-span-1 space-y-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-gov-navy border-b border-slate-100 pb-2">Register Police Station</h3>
+              
+              <form onSubmit={handleCreateStation} className="space-y-3.5 text-xs font-medium">
+                <div>
+                  <label className="text-[10px] text-slate-400 font-bold uppercase">Station Name</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Hauz Khas Police Station"
+                    value={newStation.name}
+                    onChange={(e) => setNewStation({ ...newStation, name: e.target.value })}
+                    className="w-full mt-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-850 focus:outline-none focus:border-gov-blue"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] text-slate-400 font-bold uppercase">District</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. South Delhi"
+                    value={newStation.district}
+                    onChange={(e) => setNewStation({ ...newStation, district: e.target.value })}
+                    className="w-full mt-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-850 focus:outline-none focus:border-gov-blue"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] text-slate-400 font-bold uppercase">Latitude</label>
+                  <input
+                    type="number"
+                    step="any"
+                    required
+                    placeholder="e.g. 28.5494"
+                    value={newStation.latitude}
+                    onChange={(e) => setNewStation({ ...newStation, latitude: e.target.value })}
+                    className="w-full mt-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-850 focus:outline-none focus:border-gov-blue font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] text-slate-400 font-bold uppercase">Longitude</label>
+                  <input
+                    type="number"
+                    step="any"
+                    required
+                    placeholder="e.g. 77.2044"
+                    value={newStation.longitude}
+                    onChange={(e) => setNewStation({ ...newStation, longitude: e.target.value })}
+                    className="w-full mt-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-850 focus:outline-none focus:border-gov-blue font-mono"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={actionLoading}
+                  className="w-full bg-gov-navy hover:bg-gov-blue disabled:bg-slate-300 text-white font-bold py-2.5 rounded-lg text-xs uppercase tracking-wider flex items-center justify-center space-x-1.5 transition-smooth cursor-pointer"
+                >
+                  <PlusCircle className="h-4.5 w-4.5 text-gov-gold" />
+                  <span>{actionLoading ? 'Registering...' : 'Add Station'}</span>
+                </button>
+              </form>
+            </div>
+
+            {/* List of Stations */}
+            <div className="lg:col-span-2 space-y-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-gov-navy border-b border-slate-100 pb-2">Active Police Precincts</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-200 text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                      <th className="py-2.5 px-3">Precinct Name</th>
+                      <th className="py-2.5 px-3">District</th>
+                      <th className="py-2.5 px-3">Coordinates (Lat, Lng)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 text-slate-700">
+                    {stations.map((st) => (
+                      <tr key={st._id} className="hover:bg-slate-50/50">
+                        <td className="py-3 px-3 font-bold text-gov-navy">{st.name}</td>
+                        <td className="py-3 px-3 font-semibold text-slate-650">{st.district}</td>
+                        <td className="py-3 px-3 font-mono text-slate-550">
+                          {st.latitude?.toFixed(4)}, {st.longitude?.toFixed(4)}
                         </td>
                       </tr>
                     ))}

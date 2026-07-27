@@ -5,6 +5,7 @@ const User = require('../models/User');
 const Complaint = require('../models/Complaint');
 const AuditLog = require('../models/AuditLog');
 const Notification = require('../models/Notification');
+const PoliceStation = require('../models/PoliceStation');
 const authService = require('../services/authService');
 const { decrypt } = require('../services/encryptionService');
 
@@ -235,11 +236,58 @@ const createAdminAccount = async (req, res, next) => {
   }
 };
 
+/**
+ * Get all registered police stations.
+ * Protected: All authenticated users (for citizen report filing).
+ */
+const getPoliceStations = async (req, res, next) => {
+  try {
+    const stations = await PoliceStation.find({});
+    res.status(200).json({
+      success: true,
+      stations
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Add a new police station.
+ * Protected: Super Admin only.
+ */
+const addPoliceStation = async (req, res, next) => {
+  try {
+    const { name, district, latitude, longitude } = req.body;
+    if (!name || !district || latitude === undefined || longitude === undefined) {
+      res.status(400);
+      throw new Error('Name, district, latitude, and longitude are required.');
+    }
+
+    const station = await PoliceStation.create({
+      name: name.trim(),
+      district: district.trim(),
+      latitude: Number(latitude),
+      longitude: Number(longitude)
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Police station registered successfully.',
+      station
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   exportBackup,
   restoreBackup,
   getAuditLogs,
   getSystemStats,
   getAdminsList,
-  createAdminAccount
+  createAdminAccount,
+  getPoliceStations,
+  addPoliceStation
 };

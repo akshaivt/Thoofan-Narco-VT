@@ -17,16 +17,21 @@ import {
 const SubmitReport = () => {
   const navigate = useNavigate();
 
-  const POLICE_STATIONS = [
-    { name: 'Connaught Place Police Station', district: 'Central Delhi', lat: 28.6304, lng: 77.2177 },
-    { name: 'Kashmere Gate Police Station', district: 'North Delhi', lat: 28.6675, lng: 77.2282 },
-    { name: 'Hauz Khas Police Station', district: 'South Delhi', lat: 28.5494, lng: 77.2044 },
-    { name: 'Mayur Vihar Police Station', district: 'East Delhi', lat: 28.6015, lng: 77.2974 },
-    { name: 'Rajouri Garden Police Station', district: 'West Delhi', lat: 28.6415, lng: 77.1245 },
-    { name: 'Sector 29 Police Station', district: 'Gurugram', lat: 28.4682, lng: 77.0620 },
-    { name: 'Sector 20 Police Station', district: 'Noida', lat: 28.5776, lng: 77.3221 },
-    { name: 'Indirapuram Police Station', district: 'Ghaziabad', lat: 28.6373, lng: 77.3705 }
-  ];
+  const [policeStations, setPoliceStations] = useState([]);
+
+  useEffect(() => {
+    const fetchStations = async () => {
+      try {
+        const response = await api.get('/system/police-stations');
+        if (response.data && response.data.success) {
+          setPoliceStations(response.data.stations);
+        }
+      } catch (err) {
+        console.error('Failed to load police stations:', err);
+      }
+    };
+    fetchStations();
+  }, []);
 
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371; // km
@@ -44,8 +49,8 @@ const SubmitReport = () => {
     let nearest = null;
     let minDistance = Infinity;
 
-    POLICE_STATIONS.forEach(station => {
-      const dist = calculateDistance(userLat, userLng, station.lat, station.lng);
+    policeStations.forEach(station => {
+      const dist = calculateDistance(userLat, userLng, station.latitude, station.longitude);
       if (dist < minDistance) {
         minDistance = dist;
         nearest = { ...station, distance: dist.toFixed(2) };

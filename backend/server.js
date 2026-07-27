@@ -60,7 +60,7 @@ app.use('/api/system', require('./routes/systemRoutes'));
 app.get('/', (req, res) => {
   res.json({
     success: true,
-    message: 'Operation Toofan API is live and healthy',
+    message: 'NarcoVT API is live and healthy',
     version: '1.0.0'
   });
 });

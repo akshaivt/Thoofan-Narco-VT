@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+@theme {
+  --color-gov-navy: #0B2545;
+  --color-gov-blue: #134074;
+  --color-gov-light: #EEF4F8;
+  --color-gov-gold: #C5A880;
+  --color-gov-accent: #008080;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Custom Base Styles */
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-gov-light);
+  }
+}
+
+/* Smooth custom transitions */
+.transition-smooth {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Glassmorphism utility for modern clean card overlays */
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
